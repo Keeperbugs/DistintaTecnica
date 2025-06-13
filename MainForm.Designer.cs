@@ -13,9 +13,14 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing)
             {
-                components.Dispose();
+                dragDropHandler?.Dispose();
+                searchTimer?.Dispose();
+                if (components != null)
+                {
+                    components.Dispose();
+                }
             }
             base.Dispose(disposing);
         }
@@ -168,6 +173,7 @@
             this.importaToolStripMenuItem.Name = "importaToolStripMenuItem";
             this.importaToolStripMenuItem.Size = new Size(251, 26);
             this.importaToolStripMenuItem.Text = "&Importa...";
+            this.importaToolStripMenuItem.Click += this.Import_Click;
             // 
             // esportaToolStripMenuItem
             // 
@@ -175,6 +181,7 @@
             this.esportaToolStripMenuItem.Name = "esportaToolStripMenuItem";
             this.esportaToolStripMenuItem.Size = new Size(251, 26);
             this.esportaToolStripMenuItem.Text = "&Esporta...";
+            this.esportaToolStripMenuItem.Click += this.Export_Click;
             // 
             // toolStripSeparator2
             // 
@@ -433,6 +440,7 @@
             this.contextMenuTreeView.Items.AddRange(new ToolStripItem[] { this.apriToolStripMenuItem, this.aggiungiToolStripMenuItem, this.modificaToolStripMenuItem1, this.eliminaToolStripMenuItem, this.toolStripSeparator4, this.proprietàToolStripMenuItem });
             this.contextMenuTreeView.Name = "contextMenuTreeView";
             this.contextMenuTreeView.Size = new Size(149, 130);
+            this.contextMenuTreeView.Opening += this.ContextMenuTreeView_Opening;
             // 
             // apriToolStripMenuItem
             // 

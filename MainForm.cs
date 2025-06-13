@@ -1,10 +1,14 @@
-﻿using System;
+﻿using DistintaTecnica.Data;
+using DistintaTecnica.Forms;
+using DistintaTecnica.Models;
+using DistintaTecnica.Operations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using DistintaTecnica.Data;
-using DistintaTecnica.Models;
-using DistintaTecnica.Forms;
+using DistintaTecnica.Controls;
+using DistintaTecnica.Export;
+using System.IO;
 
 namespace DistintaTecnica
 {
@@ -14,6 +18,11 @@ namespace DistintaTecnica
         private Repository repository;
         private Progetto currentProject;
         private System.Windows.Forms.Timer searchTimer;
+        private DeleteOperations deleteOperations;
+        private ElementDetailsControl detailsControl;
+        private ProjectListViewControl listViewControl;
+        private ExportManager exportManager;
+        private DragDropHandler dragDropHandler;
 
         public MainForm()
         {
@@ -30,6 +39,8 @@ namespace DistintaTecnica
             {
                 dbManager = new DatabaseManager();
                 repository = new Repository(dbManager);
+                deleteOperations = new DeleteOperations(repository);
+                exportManager = new ExportManager(repository);
 
                 // Test database connection
                 if (dbManager.TestConnection())
@@ -51,10 +62,52 @@ namespace DistintaTecnica
                 searchTimer.Tick += SearchTimer_Tick;
 
                 UpdateUI();
+                InitializeTabControls();
+                InitializeDragDrop();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Errore durante l'inizializzazione: {ex.Message}",
+                              "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+        private void InitializeTabControls()
+        {
+            try
+            {
+                // Inizializza controllo dettagli
+                detailsControl = new ElementDetailsControl();
+                detailsControl.Dock = DockStyle.Fill;
+                tabPageDettagli.Controls.Add(detailsControl);
+
+                // Inizializza controllo lista
+                listViewControl = new ProjectListViewControl();
+                listViewControl.Dock = DockStyle.Fill;
+                listViewControl.SetRepository(repository);
+                listViewControl.ElementSelected += ListViewControl_ElementSelected;
+                tabPageLista.Controls.Add(listViewControl);
+
+                UpdateStatusLabel("Controlli tab inizializzati", true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante l'inizializzazione dei controlli tab: {ex.Message}",
+                              "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void InitializeDragDrop()
+        {
+            try
+            {
+                dragDropHandler = new DragDropHandler(projectTreeView);
+                dragDropHandler.ElementMoved += DragDropHandler_ElementMoved;
+
+                UpdateStatusLabel("Drag & Drop abilitato per il TreeView", true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante l'inizializzazione del Drag & Drop: {ex.Message}",
                               "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -456,6 +509,7 @@ namespace DistintaTecnica
             }
         }
 
+        // Aggiorna il metodo ProjectTreeView_MouseClick esistente:
         private void ProjectTreeView_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -464,7 +518,12 @@ namespace DistintaTecnica
                 if (node != null)
                 {
                     projectTreeView.SelectedNode = node;
-                    // Il context menu è già associato al TreeView nel designer
+
+                    // Configura il context menu in base al tipo di nodo
+                    if (node.Tag is TreeNodeData nodeData)
+                    {
+                        ConfigureContextMenu(nodeData);
+                    }
                 }
             }
         }
@@ -483,15 +542,65 @@ namespace DistintaTecnica
 
         private void DetailsTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (tabControl1.SelectedTab == tabPageLista)
+            try
             {
-                LoadListView();
+                if (tabControl1.SelectedTab == tabPageLista)
+                {
+                    LoadListView();
+                }
+                else if (tabControl1.SelectedTab == tabPageDettagli)
+                {
+                    // Aggiorna i dettagli con l'elemento attualmente selezionato
+                    if (projectTreeView.SelectedNode?.Tag is TreeNodeData nodeData)
+                    {
+                        detailsControl?.ShowElementDetails(nodeData);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateStatusLabel($"Errore cambio tab: {ex.Message}", false);
+            }
+        }
+
+        // Metodo per aggiornare entrambi i controlli quando il progetto cambia
+        private void RefreshAllViews()
+        {
+            try
+            {
+                // Aggiorna la vista lista se è il tab attivo
+                if (tabControl1.SelectedTab == tabPageLista)
+                {
+                    LoadListView();
+                }
+
+                // Aggiorna i dettagli se c'è un elemento selezionato
+                if (projectTreeView.SelectedNode?.Tag is TreeNodeData nodeData)
+                {
+                    detailsControl?.ShowElementDetails(nodeData);
+                }
+
+                UpdateStatusLabel("Tutte le viste aggiornate");
+            }
+            catch (Exception ex)
+            {
+                UpdateStatusLabel($"Errore aggiornamento viste: {ex.Message}", false);
             }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            searchTimer?.Dispose();
+            try
+            {
+                // Dispose delle risorse personalizzate
+                dragDropHandler?.Dispose();
+                searchTimer?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                // Log dell'errore ma non bloccare la chiusura
+                System.Diagnostics.Debug.WriteLine($"Errore durante cleanup: {ex.Message}");
+            }
         }
 
         #endregion
@@ -641,14 +750,56 @@ namespace DistintaTecnica
         {
             try
             {
-                // TODO: Implement delete functionality
-                MessageBox.Show("Funzionalità di eliminazione da implementare",
-                              "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Verifica che l'elemento non sia un progetto (i progetti si eliminano diversamente)
+                if (nodeData.Tipo.ToUpper() == "PROGETTO")
+                {
+                    MessageBox.Show(
+                        "Per eliminare un progetto, utilizzare il menu File > Elimina Progetto",
+                        "Operazione non permessa",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information
+                    );
+                    return;
+                }
+
+                // Esegui l'eliminazione
+                bool success = deleteOperations.DeleteElement(nodeData, this);
+
+                if (success)
+                {
+                    // Rimuovi il nodo dal TreeView
+                    var selectedNode = projectTreeView.SelectedNode;
+                    if (selectedNode != null)
+                    {
+                        // Se il nodo eliminato ha un parent, refresh del parent
+                        var parentNode = selectedNode.Parent;
+                        selectedNode.Remove();
+
+                        if (parentNode != null)
+                        {
+                            projectTreeView.SelectedNode = parentNode;
+                            RefreshTreeNode(parentNode);
+                        }
+                        else
+                        {
+                            // Se era un nodo root, ricarica tutta la lista progetti
+                            LoadProjectList();
+                        }
+                    }
+
+                    UpdateStatusLabel($"{nodeData.Tipo} eliminato con successo");
+                    UpdateUI();
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Errore durante l'eliminazione: {ex.Message}",
-                              "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"Errore durante l'eliminazione: {ex.Message}",
+                    "Errore",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+                UpdateStatusLabel($"Errore durante l'eliminazione: {ex.Message}", false);
             }
         }
 
@@ -659,17 +810,160 @@ namespace DistintaTecnica
         private bool CanDeleteSelectedNode()
         {
             var selectedNode = projectTreeView.SelectedNode;
-            return selectedNode?.Tag is TreeNodeData nodeData && nodeData.Tipo != "PROGETTO";
+            if (selectedNode?.Tag is TreeNodeData nodeData)
+            {
+                // I progetti non si eliminano dal context menu/toolbar
+                if (nodeData.Tipo.ToUpper() == "PROGETTO")
+                    return false;
+
+                // Verifica se l'elemento può essere eliminato dal database
+                try
+                {
+                    // Per ora permettiamo sempre l'eliminazione
+                    // Il controllo dettagliato viene fatto nella DeleteOperations
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+
+            return false;
         }
 
         private void LoadElementDetails(TreeNodeData nodeData)
         {
-            // TODO: Load element details in the details tab
+            try
+            {
+                // Aggiorna il controllo dettagli
+                detailsControl?.ShowElementDetails(nodeData);
+
+                // Se il tab corrente è "Vista Lista", aggiorna anche quella
+                if (tabControl1.SelectedTab == tabPageLista)
+                {
+                    // Evidenzia l'elemento nella lista se presente
+                    HighlightElementInList(nodeData);
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateStatusLabel($"Errore caricamento dettagli: {ex.Message}", false);
+            }
         }
 
         private void LoadListView()
         {
-            // TODO: Load list view with project structure
+            try
+            {
+                if (currentProject != null)
+                {
+                    listViewControl?.LoadProject(currentProject);
+                    UpdateStatusLabel("Vista lista aggiornata");
+                }
+                else
+                {
+                    listViewControl?.LoadProject(null);
+                    UpdateStatusLabel("Nessun progetto selezionato");
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateStatusLabel($"Errore caricamento vista lista: {ex.Message}", false);
+            }
+        }
+
+        // Nuovo metodo per evidenziare un elemento nella lista
+        private void HighlightElementInList(TreeNodeData nodeData)
+        {
+            // Implementazione per evidenziare l'elemento selezionato nella vista lista
+            // Questo sarà utile per sincronizzare TreeView e ListView
+        }
+
+        // Event handler per quando un elemento viene selezionato nella vista lista
+        private void ListViewControl_ElementSelected(object sender, TreeNodeData nodeData)
+        {
+            try
+            {
+                // Trova e seleziona il nodo corrispondente nel TreeView
+                SelectNodeInTreeView(nodeData);
+
+                // Aggiorna i dettagli
+                detailsControl?.ShowElementDetails(nodeData);
+
+                UpdateStatusLabel($"Selezionato: {GetElementDisplayText(nodeData)}");
+            }
+            catch (Exception ex)
+            {
+                UpdateStatusLabel($"Errore selezione elemento: {ex.Message}", false);
+            }
+        }
+
+        // Metodo per selezionare un nodo nel TreeView basandosi sui dati
+        private void SelectNodeInTreeView(TreeNodeData targetNodeData)
+        {
+            try
+            {
+                foreach (TreeNode projectNode in projectTreeView.Nodes)
+                {
+                    var foundNode = FindNodeRecursive(projectNode, targetNodeData);
+                    if (foundNode != null)
+                    {
+                        projectTreeView.SelectedNode = foundNode;
+                        foundNode.EnsureVisible();
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Errore nella ricerca del nodo, non critico
+                System.Diagnostics.Debug.WriteLine($"Errore ricerca nodo: {ex.Message}");
+            }
+        }
+
+        // Metodo ricorsivo per trovare un nodo nel TreeView
+        private TreeNode FindNodeRecursive(TreeNode parentNode, TreeNodeData targetData)
+        {
+            // Controlla il nodo corrente
+            if (parentNode.Tag is TreeNodeData nodeData &&
+                nodeData.Tipo == targetData.Tipo &&
+                nodeData.Id == targetData.Id)
+            {
+                return parentNode;
+            }
+
+            // Cerca nei nodi figli
+            foreach (TreeNode childNode in parentNode.Nodes)
+            {
+                var foundNode = FindNodeRecursive(childNode, targetData);
+                if (foundNode != null)
+                    return foundNode;
+            }
+
+            return null;
+        }
+
+        // Metodo helper per ottenere testo di visualizzazione di un elemento
+        private string GetElementDisplayText(TreeNodeData nodeData)
+        {
+            switch (nodeData.Data)
+            {
+                case Progetto p:
+                    return $"Progetto {p.NumeroCommessa}";
+                case ParteMacchina pm:
+                    return $"Parte {pm.CodiceParteMacchina}";
+                case Sezione s:
+                    return $"Sezione {s.CodiceSezione}";
+                case Sottosezione ss:
+                    return $"Sottosezione {ss.CodiceSottosezione}";
+                case Montaggio m:
+                    return $"Montaggio {m.CodiceMontaggio}";
+                case Gruppo g:
+                    return $"Gruppo {g.CodiceGruppo}";
+                default:
+                    return "Elemento sconosciuto";
+            }
         }
 
         private void PerformSearch()
@@ -779,6 +1073,7 @@ namespace DistintaTecnica
             }
         }
 
+        // Aggiorna il metodo RefreshTreeNode per aggiornare anche gli altri controlli
         private void RefreshTreeNode(TreeNode node)
         {
             if (node?.Tag is TreeNodeData nodeData)
@@ -789,25 +1084,451 @@ namespace DistintaTecnica
                         LoadProjectStructure();
                         break;
                     case "PARTE_MACCHINA":
+                        node.Nodes.Clear();
                         LoadSezioni(node, nodeData.Id);
                         node.Expand();
                         break;
                     case "SEZIONE":
+                        node.Nodes.Clear();
                         LoadSottosezioni(node, nodeData.Id);
                         node.Expand();
                         break;
                     case "SOTTOSEZIONE":
+                        node.Nodes.Clear();
                         LoadMontaggi(node, nodeData.Id);
                         node.Expand();
                         break;
                     case "MONTAGGIO":
+                        node.Nodes.Clear();
                         LoadGruppi(node, nodeData.Id);
                         node.Expand();
                         break;
                 }
+
+                // Aggiorna anche gli altri controlli
+                RefreshAllViews();
             }
         }
 
         #endregion
+        // Aggiungi questi metodi al MainForm.cs per gestire meglio il context menu
+
+        #region Context Menu Management
+
+        /// <summary>
+        /// Configura il context menu in base al tipo di elemento selezionato
+        /// </summary>
+        private void ConfigureContextMenu(TreeNodeData nodeData)
+        {
+            if (contextMenuTreeView == null) return;
+
+            // Reset di tutti gli item
+            foreach (ToolStripMenuItem item in contextMenuTreeView.Items)
+            {
+                item.Enabled = true;
+                item.Visible = true;
+            }
+
+            switch (nodeData.Tipo.ToUpper())
+            {
+                case "PROGETTO":
+                    ConfigureProjectContextMenu();
+                    break;
+                case "PARTE_MACCHINA":
+                    ConfigureParteMacchinaContextMenu();
+                    break;
+                case "SEZIONE":
+                    ConfigureSezioneContextMenu();
+                    break;
+                case "SOTTOSEZIONE":
+                    ConfigureSottosezioneContextMenu();
+                    break;
+                case "MONTAGGIO":
+                    ConfigureMontaggioContextMenu();
+                    break;
+                case "GRUPPO":
+                    ConfigureGruppoContextMenu();
+                    break;
+            }
+        }
+
+        private void ConfigureProjectContextMenu()
+        {
+            // Per i progetti: Apri, Modifica, Elimina (se vuoto), Proprietà
+            apriToolStripMenuItem.Text = "Apri Progetto";
+            apriToolStripMenuItem.Enabled = true;
+
+            aggiungiToolStripMenuItem.Text = "Aggiungi Parte Macchina";
+            aggiungiToolStripMenuItem.Enabled = true;
+
+            modificaToolStripMenuItem1.Text = "Modifica Progetto";
+            modificaToolStripMenuItem1.Enabled = true;
+
+            // I progetti non si eliminano dal context menu
+            eliminaToolStripMenuItem.Enabled = false;
+            eliminaToolStripMenuItem.Text = "Elimina (non disponibile)";
+        }
+
+        private void ConfigureParteMacchinaContextMenu()
+        {
+            apriToolStripMenuItem.Text = "Espandi";
+            apriToolStripMenuItem.Enabled = true;
+
+            aggiungiToolStripMenuItem.Text = "Aggiungi Sezione";
+            aggiungiToolStripMenuItem.Enabled = true;
+
+            modificaToolStripMenuItem1.Text = "Modifica Parte";
+            modificaToolStripMenuItem1.Enabled = true;
+
+            eliminaToolStripMenuItem.Text = "Elimina Parte Macchina";
+            eliminaToolStripMenuItem.Enabled = true;
+        }
+
+        private void ConfigureSezioneContextMenu()
+        {
+            apriToolStripMenuItem.Text = "Espandi";
+            apriToolStripMenuItem.Enabled = true;
+
+            aggiungiToolStripMenuItem.Text = "Aggiungi Sottosezione";
+            aggiungiToolStripMenuItem.Enabled = true;
+
+            modificaToolStripMenuItem1.Text = "Modifica Sezione";
+            modificaToolStripMenuItem1.Enabled = true;
+
+            eliminaToolStripMenuItem.Text = "Elimina Sezione";
+            eliminaToolStripMenuItem.Enabled = true;
+        }
+
+        private void ConfigureSottosezioneContextMenu()
+        {
+            apriToolStripMenuItem.Text = "Espandi";
+            apriToolStripMenuItem.Enabled = true;
+
+            aggiungiToolStripMenuItem.Text = "Aggiungi Montaggio";
+            aggiungiToolStripMenuItem.Enabled = true;
+
+            modificaToolStripMenuItem1.Text = "Modifica Sottosezione";
+            modificaToolStripMenuItem1.Enabled = true;
+
+            eliminaToolStripMenuItem.Text = "Elimina Sottosezione";
+            eliminaToolStripMenuItem.Enabled = true;
+        }
+
+        private void ConfigureMontaggioContextMenu()
+        {
+            apriToolStripMenuItem.Text = "Espandi";
+            apriToolStripMenuItem.Enabled = true;
+
+            aggiungiToolStripMenuItem.Text = "Aggiungi Gruppo";
+            aggiungiToolStripMenuItem.Enabled = true;
+
+            modificaToolStripMenuItem1.Text = "Modifica Montaggio";
+            modificaToolStripMenuItem1.Enabled = true;
+
+            eliminaToolStripMenuItem.Text = "Elimina Montaggio";
+            eliminaToolStripMenuItem.Enabled = true;
+        }
+
+        private void ConfigureGruppoContextMenu()
+        {
+            apriToolStripMenuItem.Text = "Visualizza";
+            apriToolStripMenuItem.Enabled = true;
+
+            // I gruppi non possono avere sotto-elementi
+            aggiungiToolStripMenuItem.Enabled = false;
+            aggiungiToolStripMenuItem.Text = "Aggiungi (non disponibile)";
+
+            modificaToolStripMenuItem1.Text = "Modifica Gruppo";
+            modificaToolStripMenuItem1.Enabled = true;
+
+            eliminaToolStripMenuItem.Text = "Elimina Gruppo";
+            eliminaToolStripMenuItem.Enabled = true;
+        }
+
+        #endregion
+
+        // Aggiungi questi event handler per gestire meglio il context menu:
+        private void ContextMenuTreeView_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Verifica che ci sia un nodo selezionato
+            if (projectTreeView.SelectedNode == null)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            // Configura il menu in base al nodo selezionato
+            if (projectTreeView.SelectedNode.Tag is TreeNodeData nodeData)
+            {
+                ConfigureContextMenu(nodeData);
+            }
+        }
+
+        // Aggiungi questo event handler per il menu Esporta
+        private void Export_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (currentProject == null)
+                {
+                    MessageBox.Show("Nessun progetto aperto per l'esportazione.",
+                                  "Informazione", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                exportManager.ShowExportDialog(currentProject, this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante l'esportazione: {ex.Message}",
+                              "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                UpdateStatusLabel($"Errore esportazione: {ex.Message}", false);
+            }
+        }
+
+        // Nel costruttore o InitializeComponent, aggiungi:
+        // contextMenuTreeView.Opening += ContextMenuTreeView_Opening;
+
+        // Implementa anche una funzionalità di Import base
+        private void Import_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var result = MessageBox.Show(
+                    "La funzionalità di importazione è in fase di sviluppo.\n\n" +
+                    "Attualmente supporta l'importazione di:\n" +
+                    "• File CSV con struttura predefinita\n" +
+                    "• Backup di database SQLite\n\n" +
+                    "Vuoi procedere con l'importazione di un file CSV?",
+                    "Importazione",
+                    MessageBoxButtons.YesNoCancel,
+                    MessageBoxIcon.Question
+                );
+
+                if (result == DialogResult.Yes)
+                {
+                    ImportFromCSV();
+                }
+                else if (result == DialogResult.No)
+                {
+                    ImportDatabaseBackup();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante l'importazione: {ex.Message}",
+                              "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ImportFromCSV()
+        {
+            using (var openDialog = new OpenFileDialog())
+            {
+                openDialog.Filter = "File CSV (*.csv)|*.csv|Tutti i file (*.*)|*.*";
+                openDialog.Title = "Seleziona file CSV da importare";
+
+                if (openDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        // Per ora mostra solo un messaggio informativo
+                        var preview = System.IO.File.ReadAllLines(openDialog.FileName)
+                            .Take(5)
+                            .Aggregate((a, b) => a + "\n" + b);
+
+                        MessageBox.Show(
+                            $"File selezionato: {openDialog.FileName}\n\n" +
+                            "Prime righe del file:\n" +
+                            preview + "\n\n" +
+                            "Funzionalità di importazione CSV da implementare completamente.",
+                            "Anteprima Importazione",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Errore nella lettura del file CSV: {ex.Message}",
+                                      "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void ImportDatabaseBackup()
+        {
+            using (var openDialog = new OpenFileDialog())
+            {
+                openDialog.Filter = "Database SQLite (*.db)|*.db|Backup files (*.bak)|*.bak|Tutti i file (*.*)|*.*";
+                openDialog.Title = "Seleziona database di backup da importare";
+
+                if (openDialog.ShowDialog() == DialogResult.OK)
+                {
+                    var result = MessageBox.Show(
+                        $"Vuoi importare il database:\n{openDialog.FileName}\n\n" +
+                        "ATTENZIONE: Questa operazione sostituirà tutti i dati attuali!\n\n" +
+                        "È consigliabile fare un backup prima di procedere.\n" +
+                        "Vuoi continuare?",
+                        "Conferma Importazione Database",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning
+                    );
+
+                    if (result == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            // Crea backup del database attuale
+                            CreateDatabaseBackup();
+
+                            // Importa il nuovo database (implementazione da completare)
+                            MessageBox.Show(
+                                "Funzionalità di importazione database da implementare.\n\n" +
+                                "È stato creato un backup del database corrente.",
+                                "Importazione Database",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information
+                            );
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Errore durante l'importazione del database: {ex.Message}",
+                                          "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void CreateDatabaseBackup()
+        {
+            try
+            {
+                string backupPath = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "Backups"
+                );
+
+                if (!Directory.Exists(backupPath))
+                    Directory.CreateDirectory(backupPath);
+
+                string backupFileName = $"DistintaTecnica_Backup_{DateTime.Now:yyyyMMdd_HHmmss}.db";
+                string backupFullPath = Path.Combine(backupPath, backupFileName);
+
+                string currentDbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DistintaTecnica.db");
+
+                if (File.Exists(currentDbPath))
+                {
+                    File.Copy(currentDbPath, backupFullPath);
+                    UpdateStatusLabel($"Backup creato: {backupFileName}");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Errore nella creazione del backup: {ex.Message}");
+            }
+        }
+
+        // Aggiungi anche una funzionalità per creare backup manuali
+        private void CreateBackup_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (var saveDialog = new SaveFileDialog())
+                {
+                    saveDialog.Filter = "Database SQLite (*.db)|*.db|Backup files (*.bak)|*.bak";
+                    saveDialog.FileName = $"DistintaTecnica_Backup_{DateTime.Now:yyyyMMdd_HHmmss}.db";
+                    saveDialog.Title = "Salva backup database";
+
+                    if (saveDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string currentDbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DistintaTecnica.db");
+
+                        if (File.Exists(currentDbPath))
+                        {
+                            File.Copy(currentDbPath, saveDialog.FileName, true);
+
+                            MessageBox.Show($"Backup salvato con successo in:\n{saveDialog.FileName}",
+                                          "Backup Completato", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            UpdateStatusLabel("Backup database creato con successo");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Database non trovato per la creazione del backup.",
+                                          "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante la creazione del backup: {ex.Message}",
+                              "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                UpdateStatusLabel($"Errore backup: {ex.Message}", false);
+            }
+        }
+
+        // Migliora anche la gestione del menu File per abilitare/disabilitare export
+        private void UpdateFileMenu()
+        {
+            bool hasProject = currentProject != null;
+
+            // Abilita/disabilita le opzioni del menu File
+            salvaToolStripMenuItem.Enabled = hasProject;
+            salvaComeToolStripMenuItem.Enabled = hasProject;
+            esportaToolStripMenuItem.Enabled = hasProject;
+
+            // Aggiorna il testo del menu in base al progetto corrente
+            if (hasProject)
+            {
+                this.Text = $"Distinta Tecnica - Gestionale - {currentProject.NumeroCommessa}";
+            }
+            else
+            {
+                this.Text = "Distinta Tecnica - Gestionale";
+            }
+        }
+
+        // Event handler per quando un elemento viene spostato
+        private void DragDropHandler_ElementMoved(object sender, DragDropEventArgs e)
+        {
+            try
+            {
+                // Per ora mostra solo un messaggio informativo
+                // In futuro qui implementeremo l'aggiornamento del database
+
+                UpdateStatusLabel($"Spostato: {GetElementDisplayText(e.MovedElement)} -> {GetElementDisplayText(e.NewParent)}");
+
+                // Potresti voler implementare qui l'aggiornamento del database
+                // UpdateElementParentInDatabase(e.MovedElement, e.NewParent);
+
+                // Aggiorna le altre viste
+                RefreshAllViews();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore nel gestire lo spostamento: {ex.Message}",
+                              "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                UpdateStatusLabel($"Errore spostamento: {ex.Message}", false);
+            }
+        }
+
+        // Placeholder per l'aggiornamento del database dopo il drag & drop
+        private void UpdateElementParentInDatabase(TreeNodeData movedElement, TreeNodeData newParent)
+        {
+            // TODO: Implementare l'aggiornamento del database
+            // Questo richiederà nuovi metodi nel Repository per aggiornare le foreign key
+
+            MessageBox.Show(
+                "Aggiornamento database dopo Drag & Drop non ancora implementato.\n\n" +
+                "Lo spostamento è stato effettuato solo nell'interfaccia.\n" +
+                "Per renderlo permanente, ricarica il progetto.",
+                "Funzionalità da completare",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+        }
     }
 }

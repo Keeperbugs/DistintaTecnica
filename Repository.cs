@@ -680,5 +680,183 @@ namespace DistintaTecnica.Data
         }
 
         #endregion
+
+        // Questi metodi vanno aggiunti alla classe Repository esistente in Repository.cs
+
+        #region Delete Methods
+
+        public bool DeleteParteMacchina(int id)
+        {
+            using (var connection = dbManager.GetConnection())
+            {
+                connection.Open();
+
+                // Le eliminazioni a cascata sono gestite dai FOREIGN KEY ON DELETE CASCADE
+                string query = "DELETE FROM PartiMacchina WHERE Id = @id";
+
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    return command.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        public bool DeleteSezione(int id)
+        {
+            using (var connection = dbManager.GetConnection())
+            {
+                connection.Open();
+                string query = "DELETE FROM Sezioni WHERE Id = @id";
+
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    return command.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        public bool DeleteSottosezione(int id)
+        {
+            using (var connection = dbManager.GetConnection())
+            {
+                connection.Open();
+                string query = "DELETE FROM Sottosezioni WHERE Id = @id";
+
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    return command.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        public bool DeleteMontaggio(int id)
+        {
+            using (var connection = dbManager.GetConnection())
+            {
+                connection.Open();
+                string query = "DELETE FROM Montaggi WHERE Id = @id";
+
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    return command.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        public bool DeleteGruppo(int id)
+        {
+            using (var connection = dbManager.GetConnection())
+            {
+                connection.Open();
+                string query = "DELETE FROM Gruppi WHERE Id = @id";
+
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    return command.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Verifica se un elemento può essere eliminato (controlla dipendenze)
+        /// </summary>
+        public bool CanDeleteElement(string tipoElemento, int elementoId)
+        {
+            try
+            {
+                using (var connection = dbManager.GetConnection())
+                {
+                    connection.Open();
+                    string query = "";
+
+                    switch (tipoElemento.ToUpper())
+                    {
+                        case "PROGETTO":
+                            query = "SELECT COUNT(*) FROM PartiMacchina WHERE ProgettoId = @id";
+                            break;
+                        case "PARTE_MACCHINA":
+                            query = "SELECT COUNT(*) FROM Sezioni WHERE ParteMacchinaId = @id";
+                            break;
+                        case "SEZIONE":
+                            query = "SELECT COUNT(*) FROM Sottosezioni WHERE SezioneId = @id";
+                            break;
+                        case "SOTTOSEZIONE":
+                            query = "SELECT COUNT(*) FROM Montaggi WHERE SottosezioneId = @id";
+                            break;
+                        case "MONTAGGIO":
+                            query = "SELECT COUNT(*) FROM Gruppi WHERE MontaggioId = @id";
+                            break;
+                        case "GRUPPO":
+                            return true; // I gruppi possono sempre essere eliminati
+                        default:
+                            return false;
+                    }
+
+                    using (var command = new SQLiteCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@id", elementoId);
+                        int count = Convert.ToInt32(command.ExecuteScalar());
+                        return count == 0; // Può essere eliminato solo se non ha dipendenze
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return false; // In caso di errore, non permettere l'eliminazione
+            }
+        }
+
+        /// <summary>
+        /// Ottiene il numero di elementi dipendenti
+        /// </summary>
+        public int GetDependentElementsCount(string tipoElemento, int elementoId)
+        {
+            try
+            {
+                using (var connection = dbManager.GetConnection())
+                {
+                    connection.Open();
+                    string query = "";
+
+                    switch (tipoElemento.ToUpper())
+                    {
+                        case "PROGETTO":
+                            query = "SELECT COUNT(*) FROM PartiMacchina WHERE ProgettoId = @id";
+                            break;
+                        case "PARTE_MACCHINA":
+                            query = "SELECT COUNT(*) FROM Sezioni WHERE ParteMacchinaId = @id";
+                            break;
+                        case "SEZIONE":
+                            query = "SELECT COUNT(*) FROM Sottosezioni WHERE SezioneId = @id";
+                            break;
+                        case "SOTTOSEZIONE":
+                            query = "SELECT COUNT(*) FROM Montaggi WHERE SottosezioneId = @id";
+                            break;
+                        case "MONTAGGIO":
+                            query = "SELECT COUNT(*) FROM Gruppi WHERE MontaggioId = @id";
+                            break;
+                        default:
+                            return 0;
+                    }
+
+                    using (var command = new SQLiteCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@id", elementoId);
+                        return Convert.ToInt32(command.ExecuteScalar());
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return -1; // Errore nel conteggio
+            }
+        }
+
+        #endregion
     }
 }
