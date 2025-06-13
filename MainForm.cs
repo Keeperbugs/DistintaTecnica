@@ -567,41 +567,252 @@ namespace DistintaTecnica
 
         #endregion
 
-        #region Add Methods Stubs
+        #region Add Methods Implementation
 
         private void AddParteMacchina(int progettoId)
         {
-            // Implementation will be in separate form
+            try
+            {
+                var result = ElementForm.ShowCreateDialog(ElementType.ParteMacchina, progettoId, null, this);
+                if (result != null)
+                {
+                    LoadProjectStructure(); // Reload tree
+                    UpdateStatusLabel("Parte macchina aggiunta con successo");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante l'aggiunta della parte macchina: {ex.Message}",
+                              "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void AddSezione(int parteMacchinaId)
         {
-            // Implementation will be in separate form
+            try
+            {
+                string parentCode = GetParteMacchinaCode(parteMacchinaId);
+                var result = ElementForm.ShowCreateDialog(ElementType.Sezione, parteMacchinaId, parentCode, this);
+                if (result != null)
+                {
+                    RefreshTreeNode(projectTreeView.SelectedNode);
+                    UpdateStatusLabel("Sezione aggiunta con successo");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante l'aggiunta della sezione: {ex.Message}",
+                              "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void AddSottosezione(int sezioneId)
         {
-            // Implementation will be in separate form
+            try
+            {
+                string parentCode = GetSezioneCode(sezioneId);
+                var result = ElementForm.ShowCreateDialog(ElementType.Sottosezione, sezioneId, parentCode, this);
+                if (result != null)
+                {
+                    RefreshTreeNode(projectTreeView.SelectedNode);
+                    UpdateStatusLabel("Sottosezione aggiunta con successo");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante l'aggiunta della sottosezione: {ex.Message}",
+                              "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void AddMontaggio(int sottosezioneId)
         {
-            // Implementation will be in separate form
+            try
+            {
+                var result = ElementForm.ShowCreateDialog(ElementType.Montaggio, sottosezioneId, null, this);
+                if (result != null)
+                {
+                    RefreshTreeNode(projectTreeView.SelectedNode);
+                    UpdateStatusLabel("Montaggio aggiunto con successo");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante l'aggiunta del montaggio: {ex.Message}",
+                              "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void AddGruppo(int montaggioId)
         {
-            // Implementation will be in separate form
+            try
+            {
+                var result = ElementForm.ShowCreateDialog(ElementType.Gruppo, montaggioId, null, this);
+                if (result != null)
+                {
+                    RefreshTreeNode(projectTreeView.SelectedNode);
+                    UpdateStatusLabel("Gruppo aggiunto con successo");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante l'aggiunta del gruppo: {ex.Message}",
+                              "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void EditElement(TreeNodeData nodeData)
         {
-            // Implementation will be in separate form
+            try
+            {
+                object result = null;
+
+                switch (nodeData.Tipo.ToUpper())
+                {
+                    case "PARTE_MACCHINA":
+                        result = ElementForm.ShowEditDialog(ElementType.ParteMacchina, nodeData.Data, this);
+                        break;
+                    case "SEZIONE":
+                        result = ElementForm.ShowEditDialog(ElementType.Sezione, nodeData.Data, this);
+                        break;
+                    case "SOTTOSEZIONE":
+                        result = ElementForm.ShowEditDialog(ElementType.Sottosezione, nodeData.Data, this);
+                        break;
+                    case "MONTAGGIO":
+                        result = ElementForm.ShowEditDialog(ElementType.Montaggio, nodeData.Data, this);
+                        break;
+                    case "GRUPPO":
+                        result = ElementForm.ShowEditDialog(ElementType.Gruppo, nodeData.Data, this);
+                        break;
+                    case "PROGETTO":
+                        var progetto = ProjectForm.ShowEditDialog((Progetto)nodeData.Data, this);
+                        if (progetto != null)
+                        {
+                            currentProject = progetto;
+                            LoadProjectList();
+                            UpdateUI();
+                        }
+                        return;
+                }
+
+                if (result != null)
+                {
+                    RefreshTreeNode(projectTreeView.SelectedNode);
+                    UpdateStatusLabel("Elemento modificato con successo");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante la modifica: {ex.Message}",
+                              "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void DeleteElement(TreeNodeData nodeData)
         {
-            // Implementation will be in repository
+            try
+            {
+                // TODO: Implement delete functionality
+                MessageBox.Show("Funzionalità di eliminazione da implementare",
+                              "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante l'eliminazione: {ex.Message}",
+                              "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        #endregion
+
+        #region Helper Methods for Code Retrieval
+
+        private string GetParteMacchinaCode(int parteMacchinaId)
+        {
+            try
+            {
+                var partiMacchina = repository.GetPartiMacchinaByProgetto(currentProject?.Id ?? 0);
+                var parte = partiMacchina.FirstOrDefault(p => p.Id == parteMacchinaId);
+                return parte?.CodiceParteMacchina ?? string.Empty;
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
+        }
+
+        private string GetSezioneCode(int sezioneId)
+        {
+            try
+            {
+                // Find the sezione in the current project structure
+                var selectedNode = projectTreeView.SelectedNode;
+                if (selectedNode?.Tag is TreeNodeData nodeData && nodeData.Tipo == "SEZIONE")
+                {
+                    var sezione = (Sezione)nodeData.Data;
+                    return sezione.CodiceSezione;
+                }
+
+                // Alternative: search through repository
+                return FindSezioneCodeInProject(sezioneId);
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
+        }
+
+        private string FindSezioneCodeInProject(int sezioneId)
+        {
+            try
+            {
+                if (currentProject == null) return string.Empty;
+
+                var partiMacchina = repository.GetPartiMacchinaByProgetto(currentProject.Id);
+                foreach (var parte in partiMacchina)
+                {
+                    var sezioni = repository.GetSezioniByParteMacchina(parte.Id);
+                    var sezione = sezioni.FirstOrDefault(s => s.Id == sezioneId);
+                    if (sezione != null)
+                    {
+                        return sezione.CodiceSezione;
+                    }
+                }
+                return string.Empty;
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
+        }
+
+        private void RefreshTreeNode(TreeNode node)
+        {
+            if (node?.Tag is TreeNodeData nodeData)
+            {
+                switch (nodeData.Tipo.ToUpper())
+                {
+                    case "PROGETTO":
+                        LoadProjectStructure();
+                        break;
+                    case "PARTE_MACCHINA":
+                        LoadSezioni(node, nodeData.Id);
+                        node.Expand();
+                        break;
+                    case "SEZIONE":
+                        LoadSottosezioni(node, nodeData.Id);
+                        node.Expand();
+                        break;
+                    case "SOTTOSEZIONE":
+                        LoadMontaggi(node, nodeData.Id);
+                        node.Expand();
+                        break;
+                    case "MONTAGGIO":
+                        LoadGruppi(node, nodeData.Id);
+                        node.Expand();
+                        break;
+                }
+            }
         }
 
         #endregion

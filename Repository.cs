@@ -150,8 +150,12 @@ namespace DistintaTecnica.Data
             using (var connection = dbManager.GetConnection())
             {
                 connection.Open();
-                string query = @"
-                    SELECT Id, ProgettoId, SottoProgetto, TipoParteMacchina, 
+
+                // Check which column name exists
+                string columnName = GetParteMacchinaColumnName(connection);
+
+                string query = $@"
+                    SELECT Id, ProgettoId, SottoProgetto, {columnName} as TipoParteMacchina, 
                            CodiceParteMacchina, Descrizione, RevisioneInserimento, 
                            Stato, Note 
                     FROM PartiMacchina 
@@ -174,16 +178,45 @@ namespace DistintaTecnica.Data
             return parti;
         }
 
+        private string GetParteMacchinaColumnName(SQLiteConnection connection)
+        {
+            try
+            {
+                string checkQuery = "PRAGMA table_info(PartiMacchina)";
+                using (var command = new SQLiteCommand(checkQuery, connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string columnName = reader["name"].ToString();
+                        if (columnName == "TipoParteMacchina")
+                        {
+                            return "TipoParteMacchina";
+                        }
+                        else if (columnName == "ParteMacchina")
+                        {
+                            return "ParteMacchina";
+                        }
+                    }
+                }
+                return "ParteMacchina"; // Default fallback
+            }
+            catch (Exception)
+            {
+                return "ParteMacchina"; // Default fallback
+            }
+        }
+
         public int InsertParteMacchina(ParteMacchina parte)
         {
             using (var connection = dbManager.GetConnection())
             {
                 connection.Open();
                 string query = @"
-                    INSERT INTO PartiMacchina (ProgettoId, SottoProgetto, ParteMacchina, 
+                    INSERT INTO PartiMacchina (ProgettoId, SottoProgetto, TipoParteMacchina, 
                                              CodiceParteMacchina, Descrizione, RevisioneInserimento, 
                                              Stato, Note)
-                    VALUES (@progettoId, @sottoProgetto, @parteMacchina, @codice, 
+                    VALUES (@progettoId, @sottoProgetto, @tipoParteMacchina, @codice, 
                             @descrizione, @revisione, @stato, @note);
                     SELECT last_insert_rowid();";
 
@@ -191,7 +224,7 @@ namespace DistintaTecnica.Data
                 {
                     command.Parameters.AddWithValue("@progettoId", parte.ProgettoId);
                     command.Parameters.AddWithValue("@sottoProgetto", parte.SottoProgetto);
-                    command.Parameters.AddWithValue("@parteMacchina", parte.TipoParteMacchina);
+                    command.Parameters.AddWithValue("@tipoParteMacchina", parte.TipoParteMacchina);
                     command.Parameters.AddWithValue("@codice", parte.CodiceParteMacchina);
                     command.Parameters.AddWithValue("@descrizione", parte.Descrizione);
                     command.Parameters.AddWithValue("@revisione", parte.RevisioneInserimento);
@@ -555,13 +588,34 @@ namespace DistintaTecnica.Data
                 Id = Convert.ToInt32(reader["Id"]),
                 ProgettoId = Convert.ToInt32(reader["ProgettoId"]),
                 SottoProgetto = reader["SottoProgetto"].ToString(),
-                TipoParteMacchina = reader["ParteMacchina"].ToString(),
+                TipoParteMacchina = GetTipoParteMacchinaFromReader(reader),
                 CodiceParteMacchina = reader["CodiceParteMacchina"].ToString(),
                 Descrizione = reader["Descrizione"].ToString(),
                 RevisioneInserimento = reader["RevisioneInserimento"].ToString(),
                 Stato = reader["Stato"].ToString(),
                 Note = reader["Note"].ToString()
             };
+        }
+
+        private string GetTipoParteMacchinaFromReader(SQLiteDataReader reader)
+        {
+            try
+            {
+                // Try new column name first
+                return reader["TipoParteMacchina"].ToString();
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    // Fallback to old column name
+                    return reader["ParteMacchina"].ToString();
+                }
+                catch (Exception)
+                {
+                    return string.Empty;
+                }
+            }
         }
 
         private Sezione MapSezione(SQLiteDataReader reader)

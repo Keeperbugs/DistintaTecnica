@@ -22,6 +22,118 @@ namespace DistintaTecnica
             {
                 CreateDatabase();
             }
+            else
+            {
+                // Check and migrate existing database if needed
+                MigrateDatabase();
+            }
+        }
+
+        private void MigrateDatabase()
+        {
+            using (var connection = new SQLiteConnection(connectionString))
+            {
+                connection.Open();
+
+                // Check if migration is needed
+                if (CheckIfMigrationNeeded(connection))
+                {
+                    PerformMigration(connection);
+                }
+            }
+        }
+
+        private bool CheckIfMigrationNeeded(SQLiteConnection connection)
+        {
+            try
+            {
+                string checkQuery = "PRAGMA table_info(PartiMacchina)";
+                using (var command = new SQLiteCommand(checkQuery, connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string columnName = reader["name"].ToString();
+                        if (columnName == "ParteMacchina")
+                        {
+                            return true; // Old column name found, migration needed
+                        }
+                    }
+                }
+                return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private void PerformMigration(SQLiteConnection connection)
+        {
+            try
+            {
+                // Create new table with correct structure
+                string createNewTable = @"
+                    CREATE TABLE IF NOT EXISTS PartiMacchina_New (
+                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        ProgettoId INTEGER NOT NULL,
+                        SottoProgetto TEXT NOT NULL,
+                        TipoParteMacchina TEXT NOT NULL,
+                        CodiceParteMacchina TEXT NOT NULL,
+                        Descrizione TEXT NOT NULL,
+                        RevisioneInserimento TEXT NOT NULL,
+                        Stato TEXT DEFAULT 'NEW',
+                        Note TEXT,
+                        FOREIGN KEY (ProgettoId) REFERENCES Progetti(Id) ON DELETE CASCADE
+                    )";
+
+                // Copy data from old table to new table
+                string copyData = @"
+                    INSERT INTO PartiMacchina_New (Id, ProgettoId, SottoProgetto, TipoParteMacchina, 
+                                                 CodiceParteMacchina, Descrizione, RevisioneInserimento, 
+                                                 Stato, Note)
+                    SELECT Id, ProgettoId, SottoProgetto, ParteMacchina, 
+                           CodiceParteMacchina, Descrizione, RevisioneInserimento, 
+                           Stato, Note 
+                    FROM PartiMacchina";
+
+                // Drop old table and rename new table
+                string dropOldTable = "DROP TABLE PartiMacchina";
+                string renameNewTable = "ALTER TABLE PartiMacchina_New RENAME TO PartiMacchina";
+
+                using (var command = new SQLiteCommand(connection))
+                {
+                    // Execute migration in transaction
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            command.CommandText = createNewTable;
+                            command.ExecuteNonQuery();
+
+                            command.CommandText = copyData;
+                            command.ExecuteNonQuery();
+
+                            command.CommandText = dropOldTable;
+                            command.ExecuteNonQuery();
+
+                            command.CommandText = renameNewTable;
+                            command.ExecuteNonQuery();
+
+                            transaction.Commit();
+                        }
+                        catch (Exception)
+                        {
+                            transaction.Rollback();
+                            throw;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Errore durante la migrazione del database: {ex.Message}");
+            }
         }
 
         private void CreateDatabase()
@@ -49,7 +161,7 @@ namespace DistintaTecnica
                         Id INTEGER PRIMARY KEY AUTOINCREMENT,
                         ProgettoId INTEGER NOT NULL,
                         SottoProgetto TEXT NOT NULL,
-                        ParteMacchina TEXT NOT NULL,
+                        TipoParteMacchina TEXT NOT NULL,
                         CodiceParteMacchina TEXT NOT NULL,
                         Descrizione TEXT NOT NULL,
                         RevisioneInserimento TEXT NOT NULL,
