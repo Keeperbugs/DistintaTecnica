@@ -19,7 +19,6 @@ namespace DistintaTecnica
         {
             InitializeComponent();
             InitializeApplication();
-            SetupEventHandlers();
             LoadProjectList();
         }
 
@@ -36,17 +35,19 @@ namespace DistintaTecnica
                 if (dbManager.TestConnection())
                 {
                     UpdateStatusLabel("Database connesso con successo", true);
+                    toolStripStatusLabel2.Text = "DB: Connesso";
+                    toolStripStatusLabel2.ForeColor = System.Drawing.Color.LightGreen;
                 }
                 else
                 {
                     UpdateStatusLabel("Errore connessione database", false);
-                    connectionStatusLabel.Text = "DB: Errore";
-                    connectionStatusLabel.ForeColor = System.Drawing.Color.Red;
+                    toolStripStatusLabel2.Text = "DB: Errore";
+                    toolStripStatusLabel2.ForeColor = System.Drawing.Color.Red;
                 }
 
                 // Initialize search timer
                 searchTimer = new System.Windows.Forms.Timer();
-                searchTimer.Interval = 500; // 500ms delay
+                searchTimer.Interval = 500;
                 searchTimer.Tick += SearchTimer_Tick;
 
                 UpdateUI();
@@ -56,49 +57,6 @@ namespace DistintaTecnica
                 MessageBox.Show($"Errore durante l'inizializzazione: {ex.Message}",
                               "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void SetupEventHandlers()
-        {
-            // Menu events
-            newProjectMenuItem.Click += NewProject_Click;
-            openProjectMenuItem.Click += OpenProject_Click;
-            saveProjectMenuItem.Click += SaveProject_Click;
-            exitMenuItem.Click += Exit_Click;
-
-            copyMenuItem.Click += Copy_Click;
-            pasteMenuItem.Click += Paste_Click;
-            duplicateMenuItem.Click += Duplicate_Click;
-            findMenuItem.Click += Find_Click;
-
-            codeGeneratorMenuItem.Click += CodeGenerator_Click;
-            validationMenuItem.Click += Validation_Click;
-            optionsMenuItem.Click += Options_Click;
-
-            aboutMenuItem.Click += About_Click;
-
-            // Toolbar events
-            newToolStripButton.Click += NewProject_Click;
-            openToolStripButton.Click += OpenProject_Click;
-            saveToolStripButton.Click += SaveProject_Click;
-            addToolStripButton.Click += AddElement_Click;
-            editToolStripButton.Click += EditElement_Click;
-            deleteToolStripButton.Click += DeleteElement_Click;
-            searchToolStripButton.Click += Search_Click;
-
-            // TreeView events
-            projectTreeView.AfterSelect += ProjectTreeView_AfterSelect;
-            projectTreeView.MouseClick += ProjectTreeView_MouseClick;
-
-            // Search events
-            searchToolStripTextBox.TextChanged += SearchTextBox_TextChanged;
-            searchToolStripTextBox.KeyDown += SearchTextBox_KeyDown;
-
-            // Tab control events
-            detailsTabControl.SelectedIndexChanged += DetailsTabControl_SelectedIndexChanged;
-
-            // Form events
-            this.FormClosing += MainForm_FormClosing;
         }
 
         #endregion
@@ -111,27 +69,35 @@ namespace DistintaTecnica
             bool hasSelection = projectTreeView.SelectedNode != null;
 
             // Update menu items
-            saveProjectMenuItem.Enabled = hasProject;
-            saveAsMenuItem.Enabled = hasProject;
-            exportMenuItem.Enabled = hasProject;
+            salvaToolStripMenuItem.Enabled = hasProject;
+            salvaComeToolStripMenuItem.Enabled = hasProject;
+            esportaToolStripMenuItem.Enabled = hasProject;
 
             // Update toolbar buttons
-            saveToolStripButton.Enabled = hasProject;
-            addToolStripButton.Enabled = hasProject;
-            editToolStripButton.Enabled = hasSelection;
-            deleteToolStripButton.Enabled = hasSelection && CanDeleteSelectedNode();
+            salvaToolStripButton.Enabled = hasProject;
+            aggiungiToolStripButton.Enabled = hasProject;
+            modificaToolStripButton.Enabled = hasSelection;
+            eliminaToolStripButton.Enabled = hasSelection && CanDeleteSelectedNode();
 
             // Update project info
             if (hasProject)
+            {
+                UpdateProjectInfo();
+            }
+            else
+            {
+                ClearProjectInfo();
+            }
+        }
+
+        private void UpdateProjectInfo()
+        {
+            if (currentProject != null)
             {
                 txtCommessa.Text = currentProject.NumeroCommessa;
                 txtCliente.Text = currentProject.Cliente;
                 txtDisegnatore.Text = currentProject.NomeDisegnatore;
                 txtRevisione.Text = currentProject.LetteraRevisioneInserimento;
-            }
-            else
-            {
-                ClearProjectInfo();
             }
         }
 
@@ -145,8 +111,8 @@ namespace DistintaTecnica
 
         private void UpdateStatusLabel(string message, bool success = true)
         {
-            statusLabel.Text = message;
-            statusLabel.ForeColor = success ?
+            toolStripStatusLabel1.Text = message;
+            toolStripStatusLabel1.ForeColor = success ?
                 System.Drawing.Color.Black : System.Drawing.Color.Red;
         }
 
@@ -346,13 +312,11 @@ namespace DistintaTecnica
         {
             try
             {
-                using (var form = new ProjectForm())
+                var result = ProjectForm.ShowCreateDialog(this);
+                if (result != null)
                 {
-                    if (form.ShowDialog() == DialogResult.OK)
-                    {
-                        LoadProjectList();
-                        UpdateStatusLabel("Nuovo progetto creato con successo");
-                    }
+                    LoadProjectList();
+                    UpdateStatusLabel("Nuovo progetto creato con successo");
                 }
             }
             catch (Exception ex)
@@ -462,6 +426,27 @@ namespace DistintaTecnica
             PerformSearch();
         }
 
+        private void Find_Click(object sender, EventArgs e)
+        {
+            cercaToolStripTextBox.Focus();
+        }
+
+        private void About_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Distinta Tecnica v1.0\nSistema di gestione distinte tecniche\n\n© 2024",
+                          "Informazioni", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void Properties_Click(object sender, EventArgs e)
+        {
+            // Mostra proprietà dell'elemento selezionato
+            var selectedNode = projectTreeView.SelectedNode;
+            if (selectedNode?.Tag is TreeNodeData nodeData)
+            {
+                ShowElementProperties(nodeData);
+            }
+        }
+
         private void ProjectTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             if (e.Node?.Tag is TreeNodeData nodeData)
@@ -479,7 +464,7 @@ namespace DistintaTecnica
                 if (node != null)
                 {
                     projectTreeView.SelectedNode = node;
-                    ShowContextMenu(e.Location);
+                    // Il context menu è già associato al TreeView nel designer
                 }
             }
         }
@@ -490,16 +475,6 @@ namespace DistintaTecnica
             searchTimer.Start();
         }
 
-        private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                searchTimer.Stop();
-                PerformSearch();
-                e.Handled = true;
-            }
-        }
-
         private void SearchTimer_Tick(object sender, EventArgs e)
         {
             searchTimer.Stop();
@@ -508,7 +483,7 @@ namespace DistintaTecnica
 
         private void DetailsTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (detailsTabControl.SelectedTab == listViewTabPage)
+            if (tabControl1.SelectedTab == tabPageLista)
             {
                 LoadListView();
             }
@@ -516,53 +491,7 @@ namespace DistintaTecnica
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Cleanup resources
             searchTimer?.Dispose();
-        }
-
-        #endregion
-
-        #region Helper Methods
-
-        private bool CanDeleteSelectedNode()
-        {
-            var selectedNode = projectTreeView.SelectedNode;
-            return selectedNode?.Tag is TreeNodeData nodeData && nodeData.Tipo != "PROGETTO";
-        }
-
-        private void ShowContextMenu(Point location)
-        {
-            // Context menu implementation will be added later
-        }
-
-        private void LoadElementDetails(TreeNodeData nodeData)
-        {
-            // Details loading implementation will be added later
-        }
-
-        private void LoadListView()
-        {
-            // List view implementation will be added later
-        }
-
-        private void PerformSearch()
-        {
-            string searchTerm = searchToolStripTextBox.Text;
-            if (string.IsNullOrWhiteSpace(searchTerm)) return;
-
-            try
-            {
-                var results = repository.SearchGlobal(searchTerm);
-                // Search results handling will be implemented in a separate form
-                using (var searchForm = new SearchResultsForm(results))
-                {
-                    searchForm.ShowDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-                UpdateStatusLabel($"Errore durante la ricerca: {ex.Message}", false);
-            }
         }
 
         #endregion
@@ -576,7 +505,7 @@ namespace DistintaTecnica
                 var result = ElementForm.ShowCreateDialog(ElementType.ParteMacchina, progettoId, null, this);
                 if (result != null)
                 {
-                    LoadProjectStructure(); // Reload tree
+                    LoadProjectStructure();
                     UpdateStatusLabel("Parte macchina aggiunta con successo");
                 }
             }
@@ -725,7 +654,73 @@ namespace DistintaTecnica
 
         #endregion
 
-        #region Helper Methods for Code Retrieval
+        #region Helper Methods
+
+        private bool CanDeleteSelectedNode()
+        {
+            var selectedNode = projectTreeView.SelectedNode;
+            return selectedNode?.Tag is TreeNodeData nodeData && nodeData.Tipo != "PROGETTO";
+        }
+
+        private void LoadElementDetails(TreeNodeData nodeData)
+        {
+            // TODO: Load element details in the details tab
+        }
+
+        private void LoadListView()
+        {
+            // TODO: Load list view with project structure
+        }
+
+        private void PerformSearch()
+        {
+            string searchTerm = cercaToolStripTextBox.Text;
+            if (string.IsNullOrWhiteSpace(searchTerm)) return;
+
+            try
+            {
+                var results = repository.SearchGlobal(searchTerm);
+                var selectedResult = SearchResultsForm.ShowDialog(results, this);
+                if (selectedResult != null)
+                {
+                    // Navigate to selected result
+                    UpdateStatusLabel($"Trovato: {selectedResult.Codice}");
+                }
+            }
+            catch (Exception ex)
+            {
+                UpdateStatusLabel($"Errore durante la ricerca: {ex.Message}", false);
+            }
+        }
+
+        private void ShowElementProperties(TreeNodeData nodeData)
+        {
+            string details = $"Tipo: {nodeData.Tipo}\nID: {nodeData.Id}";
+
+            switch (nodeData.Data)
+            {
+                case Progetto p:
+                    details += $"\nCommessa: {p.NumeroCommessa}\nCliente: {p.Cliente}";
+                    break;
+                case ParteMacchina pm:
+                    details += $"\nCodice: {pm.CodiceParteMacchina}\nDescrizione: {pm.Descrizione}";
+                    break;
+                case Sezione s:
+                    details += $"\nCodice: {s.CodiceSezione}\nDescrizione: {s.Descrizione}\nQuantità: {s.Quantita}";
+                    break;
+                case Sottosezione ss:
+                    details += $"\nCodice: {ss.CodiceSottosezione}\nDescrizione: {ss.Descrizione}\nQuantità: {ss.Quantita}";
+                    break;
+                case Montaggio m:
+                    details += $"\nCodice: {m.CodiceMontaggio}\nDescrizione: {m.Descrizione}\nQuantità: {m.Quantita}";
+                    break;
+                case Gruppo g:
+                    details += $"\nCodice: {g.CodiceGruppo}\nTipo: {g.TipoGruppo}\nDescrizione: {g.Descrizione}\nQuantità: {g.Quantita}";
+                    break;
+            }
+
+            MessageBox.Show(details, "Proprietà Elemento", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 
         private string GetParteMacchinaCode(int parteMacchinaId)
         {
@@ -745,7 +740,6 @@ namespace DistintaTecnica
         {
             try
             {
-                // Find the sezione in the current project structure
                 var selectedNode = projectTreeView.SelectedNode;
                 if (selectedNode?.Tag is TreeNodeData nodeData && nodeData.Tipo == "SEZIONE")
                 {
@@ -753,7 +747,6 @@ namespace DistintaTecnica
                     return sezione.CodiceSezione;
                 }
 
-                // Alternative: search through repository
                 return FindSezioneCodeInProject(sezioneId);
             }
             catch (Exception)
@@ -813,51 +806,6 @@ namespace DistintaTecnica
                         break;
                 }
             }
-        }
-
-        #endregion
-
-        #region Menu Event Stubs
-
-        private void Copy_Click(object sender, EventArgs e)
-        {
-            // Copy implementation
-        }
-
-        private void Paste_Click(object sender, EventArgs e)
-        {
-            // Paste implementation
-        }
-
-        private void Duplicate_Click(object sender, EventArgs e)
-        {
-            // Duplicate implementation
-        }
-
-        private void Find_Click(object sender, EventArgs e)
-        {
-            searchToolStripTextBox.Focus();
-        }
-
-        private void CodeGenerator_Click(object sender, EventArgs e)
-        {
-            // Code generator form will be implemented separately
-        }
-
-        private void Validation_Click(object sender, EventArgs e)
-        {
-            // Validation form will be implemented separately
-        }
-
-        private void Options_Click(object sender, EventArgs e)
-        {
-            // Options form will be implemented separately
-        }
-
-        private void About_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Distinta Tecnica v1.0\nSistema di gestione distinte tecniche\n\n© 2024",
-                          "Informazioni", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         #endregion

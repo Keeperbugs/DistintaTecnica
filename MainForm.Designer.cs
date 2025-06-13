@@ -29,398 +29,693 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-
-            // Form properties
+            this.menuStrip1 = new MenuStrip();
+            this.fileToolStripMenuItem = new ToolStripMenuItem();
+            this.nuovoProgettoToolStripMenuItem = new ToolStripMenuItem();
+            this.apriProgettoToolStripMenuItem = new ToolStripMenuItem();
+            this.toolStripSeparator = new ToolStripSeparator();
+            this.salvaToolStripMenuItem = new ToolStripMenuItem();
+            this.salvaComeToolStripMenuItem = new ToolStripMenuItem();
+            this.toolStripSeparator1 = new ToolStripSeparator();
+            this.importaToolStripMenuItem = new ToolStripMenuItem();
+            this.esportaToolStripMenuItem = new ToolStripMenuItem();
+            this.toolStripSeparator2 = new ToolStripSeparator();
+            this.esciToolStripMenuItem = new ToolStripMenuItem();
+            this.modificaToolStripMenuItem = new ToolStripMenuItem();
+            this.copiaToolStripMenuItem = new ToolStripMenuItem();
+            this.incollaToolStripMenuItem = new ToolStripMenuItem();
+            this.duplicaToolStripMenuItem = new ToolStripMenuItem();
+            this.toolStripSeparator3 = new ToolStripSeparator();
+            this.trovaToolStripMenuItem = new ToolStripMenuItem();
+            this.strumentiToolStripMenuItem = new ToolStripMenuItem();
+            this.generatoreCodiciToolStripMenuItem = new ToolStripMenuItem();
+            this.validazioneDistintaToolStripMenuItem = new ToolStripMenuItem();
+            this.opzioniToolStripMenuItem = new ToolStripMenuItem();
+            this.aiutoToolStripMenuItem = new ToolStripMenuItem();
+            this.informazioniToolStripMenuItem = new ToolStripMenuItem();
+            this.toolStrip1 = new ToolStrip();
+            this.nuovoToolStripButton = new ToolStripButton();
+            this.apriToolStripButton = new ToolStripButton();
+            this.salvaToolStripButton = new ToolStripButton();
+            this.toolStripSeparator6 = new ToolStripSeparator();
+            this.aggiungiToolStripButton = new ToolStripButton();
+            this.modificaToolStripButton = new ToolStripButton();
+            this.eliminaToolStripButton = new ToolStripButton();
+            this.toolStripSeparator7 = new ToolStripSeparator();
+            this.toolStripLabel1 = new ToolStripLabel();
+            this.cercaToolStripTextBox = new ToolStripTextBox();
+            this.cercaToolStripButton = new ToolStripButton();
+            this.statusStrip1 = new StatusStrip();
+            this.toolStripStatusLabel1 = new ToolStripStatusLabel();
+            this.toolStripProgressBar1 = new ToolStripProgressBar();
+            this.toolStripStatusLabel2 = new ToolStripStatusLabel();
+            this.splitContainer1 = new SplitContainer();
+            this.projectTreeView = new TreeView();
+            this.contextMenuTreeView = new ContextMenuStrip(this.components);
+            this.apriToolStripMenuItem = new ToolStripMenuItem();
+            this.aggiungiToolStripMenuItem = new ToolStripMenuItem();
+            this.modificaToolStripMenuItem1 = new ToolStripMenuItem();
+            this.eliminaToolStripMenuItem = new ToolStripMenuItem();
+            this.toolStripSeparator4 = new ToolStripSeparator();
+            this.proprietàToolStripMenuItem = new ToolStripMenuItem();
+            this.groupBoxProgetto = new GroupBox();
+            this.tableLayoutPanel1 = new TableLayoutPanel();
+            this.label1 = new Label();
+            this.txtCommessa = new TextBox();
+            this.label2 = new Label();
+            this.txtCliente = new TextBox();
+            this.label3 = new Label();
+            this.txtDisegnatore = new TextBox();
+            this.label4 = new Label();
+            this.txtRevisione = new TextBox();
+            this.tabControl1 = new TabControl();
+            this.tabPageDettagli = new TabPage();
+            this.tabPageLista = new TabPage();
+            this.menuStrip1.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)this.splitContainer1).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
+            this.contextMenuTreeView.SuspendLayout();
+            this.groupBoxProgetto.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.tabControl1.SuspendLayout();
             this.SuspendLayout();
-
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.ImageScalingSize = new Size(20, 20);
+            this.menuStrip1.Items.AddRange(new ToolStripItem[] { this.fileToolStripMenuItem, this.modificaToolStripMenuItem, this.strumentiToolStripMenuItem, this.aiutoToolStripMenuItem });
+            this.menuStrip1.Location = new Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new Size(1400, 28);
+            this.menuStrip1.TabIndex = 0;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { this.nuovoProgettoToolStripMenuItem, this.apriProgettoToolStripMenuItem, this.toolStripSeparator, this.salvaToolStripMenuItem, this.salvaComeToolStripMenuItem, this.toolStripSeparator1, this.importaToolStripMenuItem, this.esportaToolStripMenuItem, this.toolStripSeparator2, this.esciToolStripMenuItem });
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new Size(46, 24);
+            this.fileToolStripMenuItem.Text = "&File";
+            // 
+            // nuovoProgettoToolStripMenuItem
+            // 
+            this.nuovoProgettoToolStripMenuItem.Name = "nuovoProgettoToolStripMenuItem";
+            this.nuovoProgettoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.N;
+            this.nuovoProgettoToolStripMenuItem.Size = new Size(251, 26);
+            this.nuovoProgettoToolStripMenuItem.Text = "&Nuovo Progetto";
+            this.nuovoProgettoToolStripMenuItem.Click += this.NewProject_Click;
+            // 
+            // apriProgettoToolStripMenuItem
+            // 
+            this.apriProgettoToolStripMenuItem.Name = "apriProgettoToolStripMenuItem";
+            this.apriProgettoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.O;
+            this.apriProgettoToolStripMenuItem.Size = new Size(251, 26);
+            this.apriProgettoToolStripMenuItem.Text = "&Apri Progetto";
+            this.apriProgettoToolStripMenuItem.Click += this.OpenProject_Click;
+            // 
+            // toolStripSeparator
+            // 
+            this.toolStripSeparator.Name = "toolStripSeparator";
+            this.toolStripSeparator.Size = new Size(248, 6);
+            // 
+            // salvaToolStripMenuItem
+            // 
+            this.salvaToolStripMenuItem.Enabled = false;
+            this.salvaToolStripMenuItem.Name = "salvaToolStripMenuItem";
+            this.salvaToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.S;
+            this.salvaToolStripMenuItem.Size = new Size(251, 26);
+            this.salvaToolStripMenuItem.Text = "&Salva";
+            this.salvaToolStripMenuItem.Click += this.SaveProject_Click;
+            // 
+            // salvaComeToolStripMenuItem
+            // 
+            this.salvaComeToolStripMenuItem.Enabled = false;
+            this.salvaComeToolStripMenuItem.Name = "salvaComeToolStripMenuItem";
+            this.salvaComeToolStripMenuItem.Size = new Size(251, 26);
+            this.salvaComeToolStripMenuItem.Text = "Salva &Come...";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new Size(248, 6);
+            // 
+            // importaToolStripMenuItem
+            // 
+            this.importaToolStripMenuItem.Name = "importaToolStripMenuItem";
+            this.importaToolStripMenuItem.Size = new Size(251, 26);
+            this.importaToolStripMenuItem.Text = "&Importa...";
+            // 
+            // esportaToolStripMenuItem
+            // 
+            this.esportaToolStripMenuItem.Enabled = false;
+            this.esportaToolStripMenuItem.Name = "esportaToolStripMenuItem";
+            this.esportaToolStripMenuItem.Size = new Size(251, 26);
+            this.esportaToolStripMenuItem.Text = "&Esporta...";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new Size(248, 6);
+            // 
+            // esciToolStripMenuItem
+            // 
+            this.esciToolStripMenuItem.Name = "esciToolStripMenuItem";
+            this.esciToolStripMenuItem.ShortcutKeys = Keys.Alt | Keys.F4;
+            this.esciToolStripMenuItem.Size = new Size(251, 26);
+            this.esciToolStripMenuItem.Text = "E&sci";
+            this.esciToolStripMenuItem.Click += this.Exit_Click;
+            // 
+            // modificaToolStripMenuItem
+            // 
+            this.modificaToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { this.copiaToolStripMenuItem, this.incollaToolStripMenuItem, this.duplicaToolStripMenuItem, this.toolStripSeparator3, this.trovaToolStripMenuItem });
+            this.modificaToolStripMenuItem.Name = "modificaToolStripMenuItem";
+            this.modificaToolStripMenuItem.Size = new Size(82, 24);
+            this.modificaToolStripMenuItem.Text = "&Modifica";
+            // 
+            // copiaToolStripMenuItem
+            // 
+            this.copiaToolStripMenuItem.Enabled = false;
+            this.copiaToolStripMenuItem.Name = "copiaToolStripMenuItem";
+            this.copiaToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.C;
+            this.copiaToolStripMenuItem.Size = new Size(196, 26);
+            this.copiaToolStripMenuItem.Text = "&Copia";
+            // 
+            // incollaToolStripMenuItem
+            // 
+            this.incollaToolStripMenuItem.Enabled = false;
+            this.incollaToolStripMenuItem.Name = "incollaToolStripMenuItem";
+            this.incollaToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.V;
+            this.incollaToolStripMenuItem.Size = new Size(196, 26);
+            this.incollaToolStripMenuItem.Text = "&Incolla";
+            // 
+            // duplicaToolStripMenuItem
+            // 
+            this.duplicaToolStripMenuItem.Enabled = false;
+            this.duplicaToolStripMenuItem.Name = "duplicaToolStripMenuItem";
+            this.duplicaToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.D;
+            this.duplicaToolStripMenuItem.Size = new Size(196, 26);
+            this.duplicaToolStripMenuItem.Text = "&Duplica";
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new Size(193, 6);
+            // 
+            // trovaToolStripMenuItem
+            // 
+            this.trovaToolStripMenuItem.Name = "trovaToolStripMenuItem";
+            this.trovaToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.F;
+            this.trovaToolStripMenuItem.Size = new Size(196, 26);
+            this.trovaToolStripMenuItem.Text = "&Trova...";
+            this.trovaToolStripMenuItem.Click += this.Find_Click;
+            // 
+            // strumentiToolStripMenuItem
+            // 
+            this.strumentiToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { this.generatoreCodiciToolStripMenuItem, this.validazioneDistintaToolStripMenuItem, this.opzioniToolStripMenuItem });
+            this.strumentiToolStripMenuItem.Name = "strumentiToolStripMenuItem";
+            this.strumentiToolStripMenuItem.Size = new Size(87, 24);
+            this.strumentiToolStripMenuItem.Text = "&Strumenti";
+            // 
+            // generatoreCodiciToolStripMenuItem
+            // 
+            this.generatoreCodiciToolStripMenuItem.Name = "generatoreCodiciToolStripMenuItem";
+            this.generatoreCodiciToolStripMenuItem.Size = new Size(233, 26);
+            this.generatoreCodiciToolStripMenuItem.Text = "&Generatore Codici...";
+            // 
+            // validazioneDistintaToolStripMenuItem
+            // 
+            this.validazioneDistintaToolStripMenuItem.Name = "validazioneDistintaToolStripMenuItem";
+            this.validazioneDistintaToolStripMenuItem.Size = new Size(233, 26);
+            this.validazioneDistintaToolStripMenuItem.Text = "&Validazione Distinta...";
+            // 
+            // opzioniToolStripMenuItem
+            // 
+            this.opzioniToolStripMenuItem.Name = "opzioniToolStripMenuItem";
+            this.opzioniToolStripMenuItem.Size = new Size(233, 26);
+            this.opzioniToolStripMenuItem.Text = "&Opzioni...";
+            // 
+            // aiutoToolStripMenuItem
+            // 
+            this.aiutoToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { this.informazioniToolStripMenuItem });
+            this.aiutoToolStripMenuItem.Name = "aiutoToolStripMenuItem";
+            this.aiutoToolStripMenuItem.Size = new Size(59, 24);
+            this.aiutoToolStripMenuItem.Text = "&Aiuto";
+            // 
+            // informazioniToolStripMenuItem
+            // 
+            this.informazioniToolStripMenuItem.Name = "informazioniToolStripMenuItem";
+            this.informazioniToolStripMenuItem.Size = new Size(185, 26);
+            this.informazioniToolStripMenuItem.Text = "&Informazioni...";
+            this.informazioniToolStripMenuItem.Click += this.About_Click;
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.ImageScalingSize = new Size(20, 20);
+            this.toolStrip1.Items.AddRange(new ToolStripItem[] { this.nuovoToolStripButton, this.apriToolStripButton, this.salvaToolStripButton, this.toolStripSeparator6, this.aggiungiToolStripButton, this.modificaToolStripButton, this.eliminaToolStripButton, this.toolStripSeparator7, this.toolStripLabel1, this.cercaToolStripTextBox, this.cercaToolStripButton });
+            this.toolStrip1.Location = new Point(0, 28);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new Size(1400, 27);
+            this.toolStrip1.TabIndex = 1;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // nuovoToolStripButton
+            // 
+            this.nuovoToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            this.nuovoToolStripButton.Name = "nuovoToolStripButton";
+            this.nuovoToolStripButton.Size = new Size(57, 24);
+            this.nuovoToolStripButton.Text = "Nuovo";
+            this.nuovoToolStripButton.Click += this.NewProject_Click;
+            // 
+            // apriToolStripButton
+            // 
+            this.apriToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            this.apriToolStripButton.Name = "apriToolStripButton";
+            this.apriToolStripButton.Size = new Size(41, 24);
+            this.apriToolStripButton.Text = "Apri";
+            this.apriToolStripButton.Click += this.OpenProject_Click;
+            // 
+            // salvaToolStripButton
+            // 
+            this.salvaToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            this.salvaToolStripButton.Enabled = false;
+            this.salvaToolStripButton.Name = "salvaToolStripButton";
+            this.salvaToolStripButton.Size = new Size(48, 24);
+            this.salvaToolStripButton.Text = "Salva";
+            this.salvaToolStripButton.Click += this.SaveProject_Click;
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new Size(6, 27);
+            // 
+            // aggiungiToolStripButton
+            // 
+            this.aggiungiToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            this.aggiungiToolStripButton.Enabled = false;
+            this.aggiungiToolStripButton.Name = "aggiungiToolStripButton";
+            this.aggiungiToolStripButton.Size = new Size(74, 24);
+            this.aggiungiToolStripButton.Text = "Aggiungi";
+            this.aggiungiToolStripButton.Click += this.AddElement_Click;
+            // 
+            // modificaToolStripButton
+            // 
+            this.modificaToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            this.modificaToolStripButton.Enabled = false;
+            this.modificaToolStripButton.Name = "modificaToolStripButton";
+            this.modificaToolStripButton.Size = new Size(72, 24);
+            this.modificaToolStripButton.Text = "Modifica";
+            this.modificaToolStripButton.Click += this.EditElement_Click;
+            // 
+            // eliminaToolStripButton
+            // 
+            this.eliminaToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            this.eliminaToolStripButton.Enabled = false;
+            this.eliminaToolStripButton.Name = "eliminaToolStripButton";
+            this.eliminaToolStripButton.Size = new Size(62, 24);
+            this.eliminaToolStripButton.Text = "Elimina";
+            this.eliminaToolStripButton.Click += this.DeleteElement_Click;
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new Size(6, 27);
+            // 
+            // toolStripLabel1
+            // 
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new Size(49, 24);
+            this.toolStripLabel1.Text = "Cerca:";
+            // 
+            // cercaToolStripTextBox
+            // 
+            this.cercaToolStripTextBox.Name = "cercaToolStripTextBox";
+            this.cercaToolStripTextBox.Size = new Size(200, 27);
+            this.cercaToolStripTextBox.TextChanged += this.SearchTextBox_TextChanged;
+            // 
+            // cercaToolStripButton
+            // 
+            this.cercaToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            this.cercaToolStripButton.Name = "cercaToolStripButton";
+            this.cercaToolStripButton.Size = new Size(34, 24);
+            this.cercaToolStripButton.Text = "🔍";
+            this.cercaToolStripButton.Click += this.Search_Click;
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.ImageScalingSize = new Size(20, 20);
+            this.statusStrip1.Items.AddRange(new ToolStripItem[] { this.toolStripStatusLabel1, this.toolStripProgressBar1, this.toolStripStatusLabel2 });
+            this.statusStrip1.Location = new Point(0, 748);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new Size(1400, 26);
+            this.statusStrip1.TabIndex = 2;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new Size(1254, 20);
+            this.toolStripStatusLabel1.Spring = true;
+            this.toolStripStatusLabel1.Text = "Pronto";
+            this.toolStripStatusLabel1.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // toolStripProgressBar1
+            // 
+            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+            this.toolStripProgressBar1.Size = new Size(100, 18);
+            this.toolStripProgressBar1.Visible = false;
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new Size(131, 20);
+            this.toolStripStatusLabel2.Text = "DB: Non Connesso";
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = DockStyle.Fill;
+            this.splitContainer1.Location = new Point(0, 55);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.projectTreeView);
+            this.splitContainer1.Panel1.Controls.Add(this.groupBoxProgetto);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
+            this.splitContainer1.Size = new Size(1400, 693);
+            this.splitContainer1.SplitterDistance = 350;
+            this.splitContainer1.TabIndex = 3;
+            // 
+            // projectTreeView
+            // 
+            this.projectTreeView.ContextMenuStrip = this.contextMenuTreeView;
+            this.projectTreeView.Dock = DockStyle.Fill;
+            this.projectTreeView.FullRowSelect = true;
+            this.projectTreeView.HideSelection = false;
+            this.projectTreeView.Location = new Point(0, 120);
+            this.projectTreeView.Name = "projectTreeView";
+            this.projectTreeView.ShowLines = false;
+            this.projectTreeView.ShowPlusMinus = false;
+            this.projectTreeView.Size = new Size(350, 573);
+            this.projectTreeView.TabIndex = 1;
+            this.projectTreeView.AfterSelect += this.ProjectTreeView_AfterSelect;
+            this.projectTreeView.MouseClick += this.ProjectTreeView_MouseClick;
+            // 
+            // contextMenuTreeView
+            // 
+            this.contextMenuTreeView.ImageScalingSize = new Size(20, 20);
+            this.contextMenuTreeView.Items.AddRange(new ToolStripItem[] { this.apriToolStripMenuItem, this.aggiungiToolStripMenuItem, this.modificaToolStripMenuItem1, this.eliminaToolStripMenuItem, this.toolStripSeparator4, this.proprietàToolStripMenuItem });
+            this.contextMenuTreeView.Name = "contextMenuTreeView";
+            this.contextMenuTreeView.Size = new Size(149, 130);
+            // 
+            // apriToolStripMenuItem
+            // 
+            this.apriToolStripMenuItem.Name = "apriToolStripMenuItem";
+            this.apriToolStripMenuItem.Size = new Size(148, 24);
+            this.apriToolStripMenuItem.Text = "Apri";
+            this.apriToolStripMenuItem.Click += this.OpenProject_Click;
+            // 
+            // aggiungiToolStripMenuItem
+            // 
+            this.aggiungiToolStripMenuItem.Name = "aggiungiToolStripMenuItem";
+            this.aggiungiToolStripMenuItem.Size = new Size(148, 24);
+            this.aggiungiToolStripMenuItem.Text = "Aggiungi";
+            this.aggiungiToolStripMenuItem.Click += this.AddElement_Click;
+            // 
+            // modificaToolStripMenuItem1
+            // 
+            this.modificaToolStripMenuItem1.Name = "modificaToolStripMenuItem1";
+            this.modificaToolStripMenuItem1.Size = new Size(148, 24);
+            this.modificaToolStripMenuItem1.Text = "Modifica";
+            this.modificaToolStripMenuItem1.Click += this.EditElement_Click;
+            // 
+            // eliminaToolStripMenuItem
+            // 
+            this.eliminaToolStripMenuItem.Name = "eliminaToolStripMenuItem";
+            this.eliminaToolStripMenuItem.Size = new Size(148, 24);
+            this.eliminaToolStripMenuItem.Text = "Elimina";
+            this.eliminaToolStripMenuItem.Click += this.DeleteElement_Click;
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new Size(145, 6);
+            // 
+            // proprietàToolStripMenuItem
+            // 
+            this.proprietàToolStripMenuItem.Name = "proprietàToolStripMenuItem";
+            this.proprietàToolStripMenuItem.Size = new Size(148, 24);
+            this.proprietàToolStripMenuItem.Text = "Proprietà...";
+            this.proprietàToolStripMenuItem.Click += this.Properties_Click;
+            // 
+            // groupBoxProgetto
+            // 
+            this.groupBoxProgetto.Controls.Add(this.tableLayoutPanel1);
+            this.groupBoxProgetto.Dock = DockStyle.Top;
+            this.groupBoxProgetto.Location = new Point(0, 0);
+            this.groupBoxProgetto.Name = "groupBoxProgetto";
+            this.groupBoxProgetto.Size = new Size(350, 120);
+            this.groupBoxProgetto.TabIndex = 0;
+            this.groupBoxProgetto.TabStop = false;
+            this.groupBoxProgetto.Text = "Informazioni Progetto";
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.txtCommessa, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.txtCliente, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.label3, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.txtDisegnatore, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.txtRevisione, 1, 3);
+            this.tableLayoutPanel1.Dock = DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new Point(3, 23);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            this.tableLayoutPanel1.Size = new Size(344, 94);
+            this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.Anchor = AnchorStyles.Left;
+            this.label1.AutoSize = true;
+            this.label1.Location = new Point(3, 1);
+            this.label1.Name = "label1";
+            this.label1.Size = new Size(105, 20);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "N° Commessa:";
+            // 
+            // txtCommessa
+            // 
+            this.txtCommessa.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            this.txtCommessa.Location = new Point(114, 3);
+            this.txtCommessa.Name = "txtCommessa";
+            this.txtCommessa.ReadOnly = true;
+            this.txtCommessa.Size = new Size(227, 27);
+            this.txtCommessa.TabIndex = 1;
+            // 
+            // label2
+            // 
+            this.label2.Anchor = AnchorStyles.Left;
+            this.label2.AutoSize = true;
+            this.label2.Location = new Point(3, 24);
+            this.label2.Name = "label2";
+            this.label2.Size = new Size(58, 20);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "Cliente:";
+            // 
+            // txtCliente
+            // 
+            this.txtCliente.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            this.txtCliente.Location = new Point(114, 26);
+            this.txtCliente.Name = "txtCliente";
+            this.txtCliente.ReadOnly = true;
+            this.txtCliente.Size = new Size(227, 27);
+            this.txtCliente.TabIndex = 3;
+            // 
+            // label3
+            // 
+            this.label3.Anchor = AnchorStyles.Left;
+            this.label3.AutoSize = true;
+            this.label3.Location = new Point(3, 47);
+            this.label3.Name = "label3";
+            this.label3.Size = new Size(93, 20);
+            this.label3.TabIndex = 4;
+            this.label3.Text = "Disegnatore:";
+            // 
+            // txtDisegnatore
+            // 
+            this.txtDisegnatore.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            this.txtDisegnatore.Location = new Point(114, 49);
+            this.txtDisegnatore.Name = "txtDisegnatore";
+            this.txtDisegnatore.ReadOnly = true;
+            this.txtDisegnatore.Size = new Size(227, 27);
+            this.txtDisegnatore.TabIndex = 5;
+            // 
+            // label4
+            // 
+            this.label4.Anchor = AnchorStyles.Left;
+            this.label4.AutoSize = true;
+            this.label4.Location = new Point(3, 71);
+            this.label4.Name = "label4";
+            this.label4.Size = new Size(75, 20);
+            this.label4.TabIndex = 6;
+            this.label4.Text = "Revisione:";
+            // 
+            // txtRevisione
+            // 
+            this.txtRevisione.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            this.txtRevisione.Location = new Point(114, 72);
+            this.txtRevisione.Name = "txtRevisione";
+            this.txtRevisione.ReadOnly = true;
+            this.txtRevisione.Size = new Size(227, 27);
+            this.txtRevisione.TabIndex = 7;
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPageDettagli);
+            this.tabControl1.Controls.Add(this.tabPageLista);
+            this.tabControl1.Dock = DockStyle.Fill;
+            this.tabControl1.Location = new Point(0, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new Size(1046, 693);
+            this.tabControl1.TabIndex = 0;
+            this.tabControl1.SelectedIndexChanged += this.DetailsTabControl_SelectedIndexChanged;
+            // 
+            // tabPageDettagli
+            // 
+            this.tabPageDettagli.Location = new Point(4, 29);
+            this.tabPageDettagli.Name = "tabPageDettagli";
+            this.tabPageDettagli.Padding = new Padding(3);
+            this.tabPageDettagli.Size = new Size(1038, 660);
+            this.tabPageDettagli.TabIndex = 0;
+            this.tabPageDettagli.Text = "Dettagli";
+            this.tabPageDettagli.UseVisualStyleBackColor = true;
+            // 
+            // tabPageLista
+            // 
+            this.tabPageLista.Location = new Point(4, 29);
+            this.tabPageLista.Name = "tabPageLista";
+            this.tabPageLista.Padding = new Padding(3);
+            this.tabPageLista.Size = new Size(1038, 660);
+            this.tabPageLista.TabIndex = 1;
+            this.tabPageLista.Text = "Vista Lista";
+            this.tabPageLista.UseVisualStyleBackColor = true;
+            // 
             // MainForm
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1400, 800);
-            this.MinimumSize = new System.Drawing.Size(1200, 700);
-            this.BackColor = System.Drawing.Color.FromArgb(240, 245, 251);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F);
+            // 
+            this.AutoScaleDimensions = new SizeF(8F, 20F);
+            this.AutoScaleMode = AutoScaleMode.Font;
+            this.ClientSize = new Size(1400, 774);
+            this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.toolStrip1);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
+            this.MinimumSize = new Size(1200, 700);
             this.Name = "MainForm";
-            this.Text = "Distinta Tecnica - Gestionale";
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.Text = "Distinta Tecnica - Gestionale";
             this.WindowState = FormWindowState.Maximized;
-
-            // Initialize components
-            this.InitializeMenuStrip();
-            this.InitializeToolStrip();
-            this.InitializeStatusStrip();
-            this.InitializeMainLayout();
-
+            this.FormClosing += this.MainForm_FormClosing;
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)this.splitContainer1).EndInit();
+            this.splitContainer1.ResumeLayout(false);
+            this.contextMenuTreeView.ResumeLayout(false);
+            this.groupBoxProgetto.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
-        }
 
-        private void InitializeMenuStrip()
-        {
-            this.menuStrip = new MenuStrip();
-            this.menuStrip.BackColor = System.Drawing.Color.FromArgb(45, 55, 72);
-            this.menuStrip.ForeColor = System.Drawing.Color.White;
-            this.menuStrip.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.menuStrip.Padding = new Padding(8, 4, 0, 4);
-
-            // File Menu
-            this.fileMenuItem = new ToolStripMenuItem("&File");
-            this.newProjectMenuItem = new ToolStripMenuItem("&Nuovo Progetto...", null, null, Keys.Control | Keys.N);
-            this.openProjectMenuItem = new ToolStripMenuItem("&Apri Progetto...", null, null, Keys.Control | Keys.O);
-            this.saveProjectMenuItem = new ToolStripMenuItem("&Salva", null, null, Keys.Control | Keys.S);
-            this.saveAsMenuItem = new ToolStripMenuItem("Salva &Come...");
-            this.separator1 = new ToolStripSeparator();
-            this.importMenuItem = new ToolStripMenuItem("&Importa...");
-            this.exportMenuItem = new ToolStripMenuItem("&Esporta...");
-            this.separator2 = new ToolStripSeparator();
-            this.exitMenuItem = new ToolStripMenuItem("&Esci", null, null, Keys.Alt | Keys.F4);
-
-            this.fileMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-                this.newProjectMenuItem, this.openProjectMenuItem, this.saveProjectMenuItem,
-                this.saveAsMenuItem, this.separator1, this.importMenuItem, this.exportMenuItem,
-                this.separator2, this.exitMenuItem
-            });
-
-            // Edit Menu
-            this.editMenuItem = new ToolStripMenuItem("&Modifica");
-            this.copyMenuItem = new ToolStripMenuItem("&Copia", null, null, Keys.Control | Keys.C);
-            this.pasteMenuItem = new ToolStripMenuItem("&Incolla", null, null, Keys.Control | Keys.V);
-            this.duplicateMenuItem = new ToolStripMenuItem("&Duplica", null, null, Keys.Control | Keys.D);
-            this.separator3 = new ToolStripSeparator();
-            this.findMenuItem = new ToolStripMenuItem("&Trova...", null, null, Keys.Control | Keys.F);
-
-            this.editMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-                this.copyMenuItem, this.pasteMenuItem, this.duplicateMenuItem,
-                this.separator3, this.findMenuItem
-            });
-
-            // Tools Menu
-            this.toolsMenuItem = new ToolStripMenuItem("&Strumenti");
-            this.codeGeneratorMenuItem = new ToolStripMenuItem("&Generatore Codici...");
-            this.validationMenuItem = new ToolStripMenuItem("&Validazione Distinta...");
-            this.optionsMenuItem = new ToolStripMenuItem("&Opzioni...");
-
-            this.toolsMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-                this.codeGeneratorMenuItem, this.validationMenuItem, this.optionsMenuItem
-            });
-
-            // Help Menu
-            this.helpMenuItem = new ToolStripMenuItem("&Aiuto");
-            this.aboutMenuItem = new ToolStripMenuItem("&Informazioni...");
-
-            this.helpMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-                this.aboutMenuItem
-            });
-
-            this.menuStrip.Items.AddRange(new ToolStripItem[] {
-                this.fileMenuItem, this.editMenuItem, this.toolsMenuItem, this.helpMenuItem
-            });
-
-            this.MainMenuStrip = this.menuStrip;
-            this.Controls.Add(this.menuStrip);
-        }
-
-        private void InitializeToolStrip()
-        {
-            this.toolStrip = new ToolStrip();
-            this.toolStrip.BackColor = System.Drawing.Color.FromArgb(74, 85, 104);
-            this.toolStrip.ForeColor = System.Drawing.Color.White;
-            this.toolStrip.ImageScalingSize = new Size(24, 24);
-            this.toolStrip.Padding = new Padding(8, 4, 8, 4);
-
-            // Toolbar buttons
-            this.newToolStripButton = new ToolStripButton("Nuovo");
-            this.newToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
-            this.newToolStripButton.TextImageRelation = TextImageRelation.ImageBeforeText;
-
-            this.openToolStripButton = new ToolStripButton("Apri");
-            this.openToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
-            this.openToolStripButton.TextImageRelation = TextImageRelation.ImageBeforeText;
-
-            this.saveToolStripButton = new ToolStripButton("Salva");
-            this.saveToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
-            this.saveToolStripButton.TextImageRelation = TextImageRelation.ImageBeforeText;
-
-            this.toolStripSeparator1 = new ToolStripSeparator();
-
-            this.addToolStripButton = new ToolStripButton("Aggiungi");
-            this.addToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
-            this.addToolStripButton.TextImageRelation = TextImageRelation.ImageBeforeText;
-
-            this.editToolStripButton = new ToolStripButton("Modifica");
-            this.editToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
-            this.editToolStripButton.TextImageRelation = TextImageRelation.ImageBeforeText;
-
-            this.deleteToolStripButton = new ToolStripButton("Elimina");
-            this.deleteToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
-            this.deleteToolStripButton.TextImageRelation = TextImageRelation.ImageBeforeText;
-
-            this.toolStripSeparator2 = new ToolStripSeparator();
-
-            // Search box
-            this.searchToolStripLabel = new ToolStripLabel("Cerca:");
-            this.searchToolStripTextBox = new ToolStripTextBox();
-            this.searchToolStripTextBox.Size = new Size(200, 27);
-            this.searchToolStripTextBox.BorderStyle = BorderStyle.FixedSingle;
-
-            this.searchToolStripButton = new ToolStripButton("🔍");
-
-            this.toolStrip.Items.AddRange(new ToolStripItem[] {
-                this.newToolStripButton, this.openToolStripButton, this.saveToolStripButton,
-                this.toolStripSeparator1, this.addToolStripButton, this.editToolStripButton,
-                this.deleteToolStripButton, this.toolStripSeparator2, this.searchToolStripLabel,
-                this.searchToolStripTextBox, this.searchToolStripButton
-            });
-
-            this.Controls.Add(this.toolStrip);
-        }
-
-        private void InitializeStatusStrip()
-        {
-            this.statusStrip = new StatusStrip();
-            this.statusStrip.BackColor = System.Drawing.Color.FromArgb(45, 55, 72);
-            this.statusStrip.ForeColor = System.Drawing.Color.White;
-
-            this.statusLabel = new ToolStripStatusLabel("Pronto");
-            this.statusLabel.Spring = true;
-            this.statusLabel.TextAlign = ContentAlignment.MiddleLeft;
-
-            this.progressBar = new ToolStripProgressBar();
-            this.progressBar.Size = new Size(150, 18);
-            this.progressBar.Visible = false;
-
-            this.connectionStatusLabel = new ToolStripStatusLabel("DB: Connesso");
-            this.connectionStatusLabel.ForeColor = System.Drawing.Color.LightGreen;
-
-            this.statusStrip.Items.AddRange(new ToolStripItem[] {
-                this.statusLabel, this.progressBar, this.connectionStatusLabel
-            });
-
-            this.Controls.Add(this.statusStrip);
-        }
-
-        private void InitializeMainLayout()
-        {
-            // Main container panel
-            this.mainPanel = new Panel();
-            this.mainPanel.Dock = DockStyle.Fill;
-            this.mainPanel.BackColor = System.Drawing.Color.FromArgb(247, 250, 252);
-            this.mainPanel.Padding = new Padding(8);
-
-            // Split container for main layout
-            this.mainSplitContainer = new SplitContainer();
-            this.mainSplitContainer.Dock = DockStyle.Fill;
-            this.mainSplitContainer.BackColor = System.Drawing.Color.FromArgb(226, 232, 240);
-            this.mainSplitContainer.SplitterWidth = 8;
-            this.mainSplitContainer.SplitterDistance = 350;
-            this.mainSplitContainer.Orientation = Orientation.Vertical;
-
-            // Left panel for project tree and info
-            this.leftPanel = new Panel();
-            this.leftPanel.Dock = DockStyle.Fill;
-            this.leftPanel.BackColor = System.Drawing.Color.White;
-            this.leftPanel.Padding = new Padding(8);
-
-            // Project info group
-            this.projectInfoGroupBox = new GroupBox();
-            this.projectInfoGroupBox.Text = "Informazioni Progetto";
-            this.projectInfoGroupBox.Dock = DockStyle.Top;
-            this.projectInfoGroupBox.Height = 120;
-            this.projectInfoGroupBox.BackColor = System.Drawing.Color.White;
-            this.projectInfoGroupBox.Font = new System.Drawing.Font("Segoe UI", 9F, FontStyle.Bold);
-
-            this.InitializeProjectInfoControls();
-
-            // Tree view for project structure
-            this.projectTreeView = new TreeView();
-            this.projectTreeView.Dock = DockStyle.Fill;
-            this.projectTreeView.BackColor = System.Drawing.Color.White;
-            this.projectTreeView.BorderStyle = BorderStyle.FixedSingle;
-            this.projectTreeView.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.projectTreeView.ShowLines = true;
-            this.projectTreeView.ShowPlusMinus = true;
-            this.projectTreeView.ShowRootLines = true;
-            this.projectTreeView.HideSelection = false;
-            this.projectTreeView.FullRowSelect = true;
-
-            this.leftPanel.Controls.Add(this.projectTreeView);
-            this.leftPanel.Controls.Add(this.projectInfoGroupBox);
-
-            // Right panel for details
-            this.rightPanel = new Panel();
-            this.rightPanel.Dock = DockStyle.Fill;
-            this.rightPanel.BackColor = System.Drawing.Color.White;
-            this.rightPanel.Padding = new Padding(8);
-
-            // Tab control for different views
-            this.detailsTabControl = new TabControl();
-            this.detailsTabControl.Dock = DockStyle.Fill;
-            this.detailsTabControl.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.detailsTabControl.Appearance = TabAppearance.FlatButtons;
-
-            // Details tab
-            this.detailsTabPage = new TabPage("Dettagli");
-            this.detailsTabPage.BackColor = System.Drawing.Color.White;
-            this.detailsTabPage.Padding = new Padding(8);
-
-            // List view tab  
-            this.listViewTabPage = new TabPage("Vista Lista");
-            this.listViewTabPage.BackColor = System.Drawing.Color.White;
-            this.listViewTabPage.Padding = new Padding(8);
-
-            this.detailsTabControl.TabPages.Add(this.detailsTabPage);
-            this.detailsTabControl.TabPages.Add(this.listViewTabPage);
-
-            this.rightPanel.Controls.Add(this.detailsTabControl);
-
-            // Add panels to split container
-            this.mainSplitContainer.Panel1.Controls.Add(this.leftPanel);
-            this.mainSplitContainer.Panel2.Controls.Add(this.rightPanel);
-
-            this.mainPanel.Controls.Add(this.mainSplitContainer);
-            this.Controls.Add(this.mainPanel);
-        }
-
-        private void InitializeProjectInfoControls()
-        {
-            // Project info layout
-            this.projectInfoTableLayout = new TableLayoutPanel();
-            this.projectInfoTableLayout.Dock = DockStyle.Fill;
-            this.projectInfoTableLayout.ColumnCount = 4;
-            this.projectInfoTableLayout.RowCount = 2;
-            this.projectInfoTableLayout.Padding = new Padding(8);
-
-            this.projectInfoTableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-            this.projectInfoTableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            this.projectInfoTableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-            this.projectInfoTableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-
-            this.projectInfoTableLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            this.projectInfoTableLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-
-            // Labels and textboxes
-            this.lblCommessa = new Label();
-            this.lblCommessa.Text = "N° Commessa:";
-            this.lblCommessa.AutoSize = true;
-            this.lblCommessa.Anchor = AnchorStyles.Left;
-            this.lblCommessa.Font = new System.Drawing.Font("Segoe UI", 9F);
-
-            this.txtCommessa = new TextBox();
-            this.txtCommessa.ReadOnly = true;
-            this.txtCommessa.BackColor = System.Drawing.Color.FromArgb(247, 250, 252);
-            this.txtCommessa.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-
-            this.lblCliente = new Label();
-            this.lblCliente.Text = "Cliente:";
-            this.lblCliente.AutoSize = true;
-            this.lblCliente.Anchor = AnchorStyles.Left;
-            this.lblCliente.Font = new System.Drawing.Font("Segoe UI", 9F);
-
-            this.txtCliente = new TextBox();
-            this.txtCliente.ReadOnly = true;
-            this.txtCliente.BackColor = System.Drawing.Color.FromArgb(247, 250, 252);
-            this.txtCliente.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-
-            this.lblDisegnatore = new Label();
-            this.lblDisegnatore.Text = "Disegnatore:";
-            this.lblDisegnatore.AutoSize = true;
-            this.lblDisegnatore.Anchor = AnchorStyles.Left;
-            this.lblDisegnatore.Font = new System.Drawing.Font("Segoe UI", 9F);
-
-            this.txtDisegnatore = new TextBox();
-            this.txtDisegnatore.ReadOnly = true;
-            this.txtDisegnatore.BackColor = System.Drawing.Color.FromArgb(247, 250, 252);
-            this.txtDisegnatore.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-
-            this.lblRevisione = new Label();
-            this.lblRevisione.Text = "Revisione:";
-            this.lblRevisione.AutoSize = true;
-            this.lblRevisione.Anchor = AnchorStyles.Left;
-            this.lblRevisione.Font = new System.Drawing.Font("Segoe UI", 9F);
-
-            this.txtRevisione = new TextBox();
-            this.txtRevisione.ReadOnly = true;
-            this.txtRevisione.BackColor = System.Drawing.Color.FromArgb(247, 250, 252);
-            this.txtRevisione.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-
-            // Add controls to table layout
-            this.projectInfoTableLayout.Controls.Add(this.lblCommessa, 0, 0);
-            this.projectInfoTableLayout.Controls.Add(this.txtCommessa, 1, 0);
-            this.projectInfoTableLayout.Controls.Add(this.lblCliente, 2, 0);
-            this.projectInfoTableLayout.Controls.Add(this.txtCliente, 3, 0);
-            this.projectInfoTableLayout.Controls.Add(this.lblDisegnatore, 0, 1);
-            this.projectInfoTableLayout.Controls.Add(this.txtDisegnatore, 1, 1);
-            this.projectInfoTableLayout.Controls.Add(this.lblRevisione, 2, 1);
-            this.projectInfoTableLayout.Controls.Add(this.txtRevisione, 3, 1);
-
-            this.projectInfoGroupBox.Controls.Add(this.projectInfoTableLayout);
         }
 
         #endregion
 
-        // Component declarations
-        private MenuStrip menuStrip;
-        private ToolStripMenuItem fileMenuItem;
-        private ToolStripMenuItem newProjectMenuItem;
-        private ToolStripMenuItem openProjectMenuItem;
-        private ToolStripMenuItem saveProjectMenuItem;
-        private ToolStripMenuItem saveAsMenuItem;
-        private ToolStripSeparator separator1;
-        private ToolStripMenuItem importMenuItem;
-        private ToolStripMenuItem exportMenuItem;
-        private ToolStripSeparator separator2;
-        private ToolStripMenuItem exitMenuItem;
-        private ToolStripMenuItem editMenuItem;
-        private ToolStripMenuItem copyMenuItem;
-        private ToolStripMenuItem pasteMenuItem;
-        private ToolStripMenuItem duplicateMenuItem;
-        private ToolStripSeparator separator3;
-        private ToolStripMenuItem findMenuItem;
-        private ToolStripMenuItem toolsMenuItem;
-        private ToolStripMenuItem codeGeneratorMenuItem;
-        private ToolStripMenuItem validationMenuItem;
-        private ToolStripMenuItem optionsMenuItem;
-        private ToolStripMenuItem helpMenuItem;
-        private ToolStripMenuItem aboutMenuItem;
-
-        private ToolStrip toolStrip;
-        private ToolStripButton newToolStripButton;
-        private ToolStripButton openToolStripButton;
-        private ToolStripButton saveToolStripButton;
-        private ToolStripSeparator toolStripSeparator1;
-        private ToolStripButton addToolStripButton;
-        private ToolStripButton editToolStripButton;
-        private ToolStripButton deleteToolStripButton;
-        private ToolStripSeparator toolStripSeparator2;
-        private ToolStripLabel searchToolStripLabel;
-        private ToolStripTextBox searchToolStripTextBox;
-        private ToolStripButton searchToolStripButton;
-
-        private StatusStrip statusStrip;
-        private ToolStripStatusLabel statusLabel;
-        private ToolStripProgressBar progressBar;
-        private ToolStripStatusLabel connectionStatusLabel;
-
-        private Panel mainPanel;
-        private SplitContainer mainSplitContainer;
-        private Panel leftPanel;
-        private Panel rightPanel;
-
-        private GroupBox projectInfoGroupBox;
-        private TableLayoutPanel projectInfoTableLayout;
-        private Label lblCommessa;
-        private TextBox txtCommessa;
-        private Label lblCliente;
-        private TextBox txtCliente;
-        private Label lblDisegnatore;
-        private TextBox txtDisegnatore;
-        private Label lblRevisione;
-        private TextBox txtRevisione;
-
-        private TreeView projectTreeView;
-        private TabControl detailsTabControl;
-        private TabPage detailsTabPage;
-        private TabPage listViewTabPage;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem nuovoProgettoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem apriProgettoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
+        private System.Windows.Forms.ToolStripMenuItem salvaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem salvaComeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem importaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem esportaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem esciToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem modificaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copiaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem incollaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem duplicaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripMenuItem trovaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem strumentiToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem generatoreCodiciToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem validazioneDistintaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem opzioniToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aiutoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem informazioniToolStripMenuItem;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripButton nuovoToolStripButton;
+        private System.Windows.Forms.ToolStripButton apriToolStripButton;
+        private System.Windows.Forms.ToolStripButton salvaToolStripButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+        private System.Windows.Forms.ToolStripButton aggiungiToolStripButton;
+        private System.Windows.Forms.ToolStripButton modificaToolStripButton;
+        private System.Windows.Forms.ToolStripButton eliminaToolStripButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+        private System.Windows.Forms.ToolStripTextBox cercaToolStripTextBox;
+        private System.Windows.Forms.ToolStripButton cercaToolStripButton;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.TreeView projectTreeView;
+        private System.Windows.Forms.GroupBox groupBoxProgetto;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txtCommessa;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txtCliente;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox txtDisegnatore;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox txtRevisione;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPageDettagli;
+        private System.Windows.Forms.TabPage tabPageLista;
+        private System.Windows.Forms.ContextMenuStrip contextMenuTreeView;
+        private System.Windows.Forms.ToolStripMenuItem apriToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aggiungiToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem modificaToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem eliminaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripMenuItem proprietàToolStripMenuItem;
     }
 }
