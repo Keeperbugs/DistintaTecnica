@@ -1122,11 +1122,14 @@ namespace DistintaTecnica
         {
             if (contextMenuTreeView == null) return;
 
-            // Reset di tutti gli item
-            foreach (ToolStripMenuItem item in contextMenuTreeView.Items)
+            // Reset di tutti gli item (solo ToolStripMenuItem, non i separator)
+            foreach (ToolStripItem item in contextMenuTreeView.Items)
             {
-                item.Enabled = true;
-                item.Visible = true;
+                if (item is ToolStripMenuItem menuItem)
+                {
+                    menuItem.Enabled = true;
+                    menuItem.Visible = true;
+                }
             }
 
             switch (nodeData.Tipo.ToUpper())
