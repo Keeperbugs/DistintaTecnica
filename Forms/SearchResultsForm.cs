@@ -28,19 +28,26 @@ namespace DistintaTecnica.Forms
             allResults = results ?? new List<SearchResult>();
             filteredResults = new List<SearchResult>(allResults);
 
-            InitializeForm();
+            InitializeFormAfterDesigner();
             SetupEventHandlers();
             LoadResults();
         }
 
         #region Initialization
 
-        private void InitializeForm()
+        private void InitializeFormAfterDesigner()
         {
             // Initialize search timer
             searchTimer = new System.Windows.Forms.Timer();
             searchTimer.Interval = 300; // 300ms delay
             searchTimer.Tick += SearchTimer_Tick;
+
+            // Setup ListView columns
+            resultsListView.Columns.Add("Tipo", 100);
+            resultsListView.Columns.Add("Codice", 120);
+            resultsListView.Columns.Add("Descrizione", 300);
+            resultsListView.Columns.Add("Progetto", 120);
+            resultsListView.Columns.Add("Percorso", 200);
 
             // Set initial focus
             if (allResults.Count > 0)
@@ -438,19 +445,6 @@ namespace DistintaTecnica.Forms
         #endregion
 
         #region Cleanup
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                searchTimer?.Dispose();
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
-            base.Dispose(disposing);
-        }
 
         #endregion
     }

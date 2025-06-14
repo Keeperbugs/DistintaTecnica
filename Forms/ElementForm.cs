@@ -43,7 +43,7 @@ namespace DistintaTecnica.Forms
             this.currentElement = existingElement;
             this.isEditMode = existingElement != null;
 
-            InitializeForm();
+            InitializeFormAfterDesigner();
             SetupEventHandlers();
             LoadComboBoxData();
 
@@ -55,7 +55,7 @@ namespace DistintaTecnica.Forms
 
         #region Initialization
 
-        private void InitializeForm()
+        private void InitializeFormAfterDesigner()
         {
             // Set form title and labels based on element type
             string elementTypeName = GetElementTypeName();
@@ -194,8 +194,16 @@ namespace DistintaTecnica.Forms
             if (!canAutoGenerate)
             {
                 lblCodice.Text = "Codice *:";
-                txtCodice.PlaceholderText = elementType == ElementType.Montaggio ?
-                    "es: 82509A1" : "es: 51152M, 123456, 1234567";
+                if (elementType == ElementType.Montaggio)
+                {
+                    // Aggiungi placeholder per montaggi
+                    txtCodice.PlaceholderText = "es: 82509A1";
+                }
+                else
+                {
+                    // Placeholder per gruppi
+                    txtCodice.PlaceholderText = "es: 51152M, 123456, 1234567";
+                }
             }
         }
 

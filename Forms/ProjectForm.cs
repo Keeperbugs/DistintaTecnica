@@ -29,7 +29,7 @@ namespace DistintaTecnica.Forms
             currentProject = progetto;
             isEditMode = progetto != null;
 
-            InitializeForm();
+            InitializeFormAfterDesigner();
             SetupEventHandlers();
 
             if (isEditMode)
@@ -40,7 +40,7 @@ namespace DistintaTecnica.Forms
 
         #region Initialization
 
-        private void InitializeForm()
+        private void InitializeFormAfterDesigner()
         {
             if (isEditMode)
             {
@@ -56,6 +56,10 @@ namespace DistintaTecnica.Forms
                 this.subtitleLabel.Text = "Inserisci le informazioni base del progetto";
                 this.okButton.Text = "Crea Progetto";
             }
+
+            // Set default date and revision
+            this.dtpDataInserimento.Value = DateTime.Now;
+            this.cmbRevisione.SelectedIndex = 0; // Default to "A"
 
             // Set focus to first field
             this.txtCommessa.Focus();
