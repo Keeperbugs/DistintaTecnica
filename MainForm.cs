@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using DistintaTecnica.Controls;
 using DistintaTecnica.Export;
 using System.IO;
+using DistintaTecnica.Business;
 
 namespace DistintaTecnica
 {
@@ -360,6 +361,21 @@ namespace DistintaTecnica
         #endregion
 
         #region Event Handlers
+
+        private void LibreriaCodici_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Mostra il form di gestione libreria codici
+                ShowLibreriaCodiciManager();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore durante l'apertura della libreria codici: {ex.Message}",
+                              "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                UpdateStatusLabel($"Errore libreria codici: {ex.Message}", false);
+            }
+        }
 
         private void NewProject_Click(object sender, EventArgs e)
         {
@@ -806,6 +822,147 @@ namespace DistintaTecnica
         #endregion
 
         #region Helper Methods
+
+        private void ShowLibreriaCodiciManager()
+        {
+            try
+            {
+                // Per ora mostra un form di test del CodeSelector
+                // In futuro questo aprirà il form di gestione completa della libreria
+
+                using (var testForm = new TestCodeSelectorForm())
+                {
+                    testForm.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore: {ex.Message}", "Errore",
+                              MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Form temporaneo per testare il CodeSelector:
+        public partial class TestCodeSelectorForm : Form
+        {
+            private ComboBox cmbTipoElemento;
+            private TextBox txtCommessa;
+            private Button btnTest;
+            private Label lblRisultato;
+
+            public TestCodeSelectorForm()
+            {
+                InitializeComponent();
+            }
+
+            private void InitializeComponent()
+            {
+                this.Size = new Size(500, 300);
+                this.Text = "Test Code Selector";
+                this.StartPosition = FormStartPosition.CenterParent;
+                this.FormBorderStyle = FormBorderStyle.FixedDialog;
+                this.MaximizeBox = false;
+                this.MinimizeBox = false;
+
+                // ComboBox tipo elemento
+                var lblTipo = new Label();
+                lblTipo.Text = "Tipo Elemento:";
+                lblTipo.Location = new Point(20, 20);
+                lblTipo.Size = new Size(100, 23);
+                this.Controls.Add(lblTipo);
+
+                cmbTipoElemento = new ComboBox();
+                cmbTipoElemento.DropDownStyle = ComboBoxStyle.DropDownList;
+                cmbTipoElemento.Location = new Point(130, 20);
+                cmbTipoElemento.Size = new Size(200, 23);
+                cmbTipoElemento.Items.AddRange(new string[] {
+            "ParteMacchina",
+            "Sezione",
+            "Sottosezione",
+            "Montaggio",
+            "Gruppo"
+        });
+                cmbTipoElemento.SelectedIndex = 0;
+                this.Controls.Add(cmbTipoElemento);
+
+                // TextBox commessa
+                var lblCommessa = new Label();
+                lblCommessa.Text = "N° Commessa:";
+                lblCommessa.Location = new Point(20, 60);
+                lblCommessa.Size = new Size(100, 23);
+                this.Controls.Add(lblCommessa);
+
+                txtCommessa = new TextBox();
+                txtCommessa.Location = new Point(130, 60);
+                txtCommessa.Size = new Size(200, 23);
+                txtCommessa.Text = "2024-001"; // Default
+                this.Controls.Add(txtCommessa);
+
+                // Button test
+                btnTest = new Button();
+                btnTest.Text = "Apri Code Selector";
+                btnTest.Location = new Point(130, 100);
+                btnTest.Size = new Size(150, 35);
+                btnTest.BackColor = Color.FromArgb(59, 130, 246);
+                btnTest.ForeColor = Color.White;
+                btnTest.FlatStyle = FlatStyle.Flat;
+                btnTest.Click += BtnTest_Click;
+                this.Controls.Add(btnTest);
+
+                // Label risultato
+                lblRisultato = new Label();
+                lblRisultato.Location = new Point(20, 150);
+                lblRisultato.Size = new Size(450, 100);
+                lblRisultato.Text = "Clicca il pulsante per testare il CodeSelector";
+                lblRisultato.BorderStyle = BorderStyle.FixedSingle;
+                lblRisultato.BackColor = Color.FromArgb(247, 250, 252);
+                this.Controls.Add(lblRisultato);
+            }
+
+            private void BtnTest_Click(object sender, EventArgs e)
+            {
+                try
+                {
+                    // Converti la selezione in enum
+                    if (!Enum.TryParse<TipoElemento>(cmbTipoElemento.SelectedItem.ToString(), out TipoElemento tipo))
+                    {
+                        MessageBox.Show("Seleziona un tipo elemento valido", "Errore");
+                        return;
+                    }
+
+                    string commessa = txtCommessa.Text.Trim();
+                    if (string.IsNullOrEmpty(commessa))
+                    {
+                        MessageBox.Show("Inserisci un numero commessa", "Errore");
+                        return;
+                    }
+
+                    // Apri il CodeSelector
+                    var result = CodeSelectorForm.SelectCode(tipo, commessa, this);
+
+                    // Mostra il risultato
+                    if (result.Success)
+                    {
+                        lblRisultato.Text = $"✅ SELEZIONE COMPLETATA\n\n" +
+                                          $"Codice: {result.Codice}\n" +
+                                          $"Descrizione: {result.Descrizione}\n" +
+                                          $"Nuovo: {(result.IsNewCode ? "Sì" : "No")}\n" +
+                                          $"Tipo: {tipo}";
+                        lblRisultato.ForeColor = Color.FromArgb(34, 197, 94);
+                    }
+                    else
+                    {
+                        lblRisultato.Text = "❌ Selezione annullata dall'utente";
+                        lblRisultato.ForeColor = Color.FromArgb(239, 68, 68);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    lblRisultato.Text = $"❌ ERRORE: {ex.Message}";
+                    lblRisultato.ForeColor = Color.FromArgb(239, 68, 68);
+                }
+            }
+        }
 
         private bool CanDeleteSelectedNode()
         {
